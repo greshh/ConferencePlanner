@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model assignment {
+  assignment_id Int     @id @default(autoincrement())
+  task_id       Int?
+  member_id     Int?
+  member        member? @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignment_member")
+  task          task?   @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignment_task")
+
+  @@index([member_id], map: "fk_member_id_idx")
+  @@index([task_id], map: "fk_task_id_idx")
+}
+
+model committee {
+  committee_id     Int                @id @default(autoincrement())
+  committee_name   String             @db.VarChar(45)
+  committee_head   committee_head[]
+  committee_parent committee_parent[]
+  membership       membership[]
+  task_committee   task_committee[]
+}
+
+model committee_head {
+  committee_head_id Int        @id @default(autoincrement())
+  first_name        String     @db.VarChar(45)
+  last_name         String     @db.VarChar(45)
+  date_of_birth     DateTime   @db.Date
+  chapter           String?    @db.VarChar(45)
+  phone_number      String?    @db.VarChar(13)
+  email             String?    @db.VarChar(100)
+  committee_id      Int?
+  committee         committee? @relation(fields: [committee_id], references: [committee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_head_committee")
+
+  @@index([committee_id], map: "fk_head_committee_idx")
+}
+
+model committee_parent {
+  committee_parent_id Int                 @id @default(autoincrement())
+  committee_id        Int?
+  parent_id           Int?
+  committee           committee?          @relation(fields: [committee_id], references: [committee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_committeeparent_committee")
+  parent_coordinator  parent_coordinator? @relation(fields: [parent_id], references: [parent_coordinator_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_committeeparent_parent")
+
+  @@index([committee_id], map: "fk_committeeparent_committee_idx")
+  @@index([parent_id], map: "fk_committeeparent_parent_idx")
+}
+
+model member {
+  member_id     Int          @id @unique(map: "member_id_UNIQUE") @default(autoincrement())
+  first_name    String       @db.VarChar(45)
+  last_name     String       @db.VarChar(45)
+  date_of_birth DateTime     @db.Date
+  chapter       String       @db.VarChar(45)
+  phone_number  String?      @db.VarChar(13)
+  email         String?      @db.VarChar(100)
+  assignment    assignment[]
+  membership    membership[]
+}
+
+model membership {
+  membership_id Int        @id @default(autoincrement())
+  committee_id  Int?
+  member_id     Int?
+  committee     committee? @relation(fields: [committee_id], references: [committee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_membership_committee")
+  member        member?    @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_membership_member")
+
+  @@index([committee_id], map: "fk_membership_committee_idx")
+  @@index([member_id], map: "fk_membership_member_idx")
+}
+
+model parent_coordinator {
+  parent_coordinator_id Int                @id @default(autoincrement())
+  first_name            String             @db.VarChar(45)
+  last_name             String             @db.VarChar(45)
+  phone_number          String?            @db.VarChar(13)
+  email                 String?            @db.VarChar(100)
+  spouse_id             Int?
+  title                 String?            @db.VarChar(4)
+  committee_parent      committee_parent[]
+}
+
+model task {
+  task_id        Int              @id @unique(map: "Task_ID_UNIQUE") @default(autoincrement())
+  task_name      String           @db.VarChar(45)
+  due_date       DateTime?        @db.Date
+  description    String?          @db.VarChar(100)
+  assignment     assignment[]
+  task_committee task_committee[]
+  workflow_task  workflow_task[]
+}
+
+model task_committee {
+  task_committee_id Int        @id @default(autoincrement())
+  task_id           Int?
+  committee_id      Int?
+  committee         committee? @relation(fields: [committee_id], references: [committee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_taskcommittee_committee")
+  task              task?      @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_taskcommittee_task")
+
+  @@index([committee_id], map: "fk_committee_id_idx")
+  @@index([task_id], map: "fk_task_id_idx")
+}
+
+model workflow {
+  workflow_id   Int             @id @default(autoincrement())
+  workflow_name String          @db.VarChar(45)
+  workflow_task workflow_task[]
+}
+
+model workflow_task {
+  workflow_task_id Int       @id @default(autoincrement())
+  workflow_id      Int?
+  task_id          Int?
+  task             task?     @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_workflowtask_task")
+  workflow         workflow? @relation(fields: [workflow_id], references: [workflow_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_workflowtask_workflow")
+
+  @@index([task_id], map: "fk_workflowtask_task_idx")
+  @@index([workflow_id], map: "fk_workflowtask_workflow_idx")
+}
