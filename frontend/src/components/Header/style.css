@@ -1,0 +1,20 @@
+.header {
+        background-color: #5babd9;
+        display: flex;
+        height: 100px;
+        left: -1572px;
+        position: relative;
+        top: 709px;
+        width: 1536px;
+}
+
+.header .image {
+        aspect-ratio: 0.7;
+        flex: 1;
+        height: 80px;
+        margin-left: 1.43%;
+        margin-right: 94.92%;
+        margin-top: 10px;
+        object-fit: cover;
+        width: 56px;
+}

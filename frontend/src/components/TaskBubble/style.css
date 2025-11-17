@@ -1,0 +1,41 @@
+.task-bubble {
+        background-image: url(https://c.animaapp.com/NoNNVYFT/img/rectangle-5-15.svg);
+        background-size: 100% 100%;
+        border-radius: 10px;
+        display: flex;
+        gap: 17px;
+        left: 10px;
+        position: relative;
+        top: 20px;
+        width: 345px;
+}
+
+.task-bubble .ellipse {
+        aspect-ratio: 1;
+        border: 1px solid;
+        border-color: #000000;
+        border-radius: 10px;
+        height: 20px;
+        margin-left: 16px;
+        margin-top: 15px;
+        width: 20px;
+}
+
+.task-bubble .text-wrapper {
+        align-items: center;
+        color: #000000;
+        display: flex;
+        font-family: "Roboto", Helvetica;
+        font-size: 20px;
+        font-weight: 400;
+        height: 50px;
+        justify-content: left;
+        letter-spacing: 0;
+        line-height: 50px;
+        width: 292px;
+}
+
+.task-bubble:hover {
+        box-shadow: 0px 2px 8px #00000040;
+        transition: box-shadow 0.2s ease;
+}
