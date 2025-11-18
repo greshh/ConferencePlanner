@@ -8,7 +8,7 @@ html, body {
 }
 
 .desktop {
-        background-color: #ffffff;
+        background-color: #9fcbe3e6;
         display: flex;
         justify-content: flex-start;
         flex-direction: column;
@@ -50,7 +50,7 @@ html, body {
         background-color: #fcfcfc;
         height: 10vh;
         margin-left: 10vw;
-        pointer-events: none;
+        pointer-events: auto;
         position: fixed;
         margin-top: 90vh;
         width: 20vw;
@@ -58,6 +58,10 @@ html, body {
         align-items: center;
         justify-content: center;
         z-index: 100;
+}
+
+.desktop .add-a-task-panel .add-a-task {
+        pointer-events: auto;
 }
 
 .desktop .my-tasks {
