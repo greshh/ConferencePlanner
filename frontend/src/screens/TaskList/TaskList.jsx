@@ -6,8 +6,6 @@ import { TaskBubble } from "../../components/TaskBubble";
 import "./style.css";
 
 export const TaskList = () => {
-  const spacing = 20;
-
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,41 +27,45 @@ export const TaskList = () => {
   }, []);
 
   return (
-    <div className="desktop" data-model-id="1:2">
-      <div className="group">
-        {loading ? (
-          <div className="loading">Loading tasks…</div>
-        ) : error ? (
-          <div className="error">Error: {error}</div>
-        ) : (
-          tasks.map((t, index) => {
-            const task_id = t.task_i;
-            const task_name = t.task_name;
-            return (
-              <div
-                key={task_id}
-                style={{
-                  marginBottom: `${spacing}px`,
-                }}
-              >
-                <TaskBubble task={task_name} />
-              </div>
-            );
-          })
-        )}
-        <div className="group-2">
-          <div className="rectangle" />
-          <div className="text-wrapper-3">MY TASKS</div>
+    <div className="desktop">
+      <div className="header">
+        <Header />
+      </div>
+      <div className="task-heading">
+        <div className="my-tasks">MY TASKS</div>
+      </div>
+      <div className="content">
+        <div className="left-panel">
+          <Sidebar style={{order: `1` }} />
+          <div style={{order: `2`, margin:`20vh 0 10vh 0`, width: `20vw`}}>
+            {loading ? (
+              <div className="loading">Loading tasks…</div>
+            ) : error ? (
+              alert(error)
+            ) : (
+              tasks.map((t) => {
+                const task_id = t.task_i;
+                const task_name = t.task_name;
+                return (
+                  <div
+                    key={task_id}
+                    style={{
+                      display: `flex`,
+                      marginBottom: `5%`,
+                      justifyContent: `center`
+                    }}
+                  >
+                    <TaskBubble task={task_name} />
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
-
-      <Sidebar className="sidebar-instance" />
-      <div className="rectangle-2" />
-
-      <div className="group-3" />
-
-      <AddATask className="add-a-task-instance" />
-      <Header className="header-instance" />
+      <div className="add-a-task-panel">
+        <AddATask className="add-a-task-instance" />
+      </div>
     </div>
   );
 };

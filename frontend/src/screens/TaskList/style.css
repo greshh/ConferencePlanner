@@ -1,77 +1,72 @@
+html, body {
+        margin: 0;
+        padding: 0;
+}
+
+#root {
+        min-height: 100vh;
+}
+
 .desktop {
         background-color: #ffffff;
         display: flex;
-        min-width: 1536px;
-        position: relative;
-        width: 100%;
+        justify-content: flex-start;
+        flex-direction: column;
+        min-height: 100vh;
 }
 
-.desktop .group {
-        background-color: #fcfcfc;
-        margin-left: 200px;
-        margin-top: 149px;
-        position: relative;
-        width: 379px;
-        z-index: 1;
+.desktop .header {
+        left: 0 !important;
+        top: 0 !important;
+        order: 1;
 }
 
-.desktop .task-bubble-instance {
-        height: 50px !important;
-        left: 17px !important;
-        position: absolute !important;
-        top: 69px !important;
-}
-
-.desktop .group-2 {
-        height: 69px;
-        left: 0;
-        pointer-events: none;
-        position: absolute;
-        top: 0;
-        width: 381px;
-}
-
-.desktop .rectangle {
-        background-color: #fcfcfc;
-        height: 69px;
-        left: 200px;
-        position: fixed;
-        top: 100px;
-        width: 379px;
-}
-
-.desktop .text-wrapper-3 {
-        align-items: center;
-        color: #000000;
+.content {
         display: flex;
+        order: 2;
+}
+
+.desktop .left-panel {
+        display: flex;
+        background-color: #fcfcfc;
+        position: relative;
+}
+
+.desktop .task-heading {
+        background-color: #fcfcfc;
+        height: 10vh;
+        margin-left: 10vw;
+        pointer-events: none;
+        position: fixed;
+        margin-top: 10vh;
+        width: 20vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+}
+
+.desktop .add-a-task-panel {
+        background-color: #fcfcfc;
+        height: 10vh;
+        margin-left: 10vw;
+        pointer-events: none;
+        position: fixed;
+        margin-top: 90vh;
+        width: 20vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+}
+
+.desktop .my-tasks {
+        color: #000000;
         font-family: "Roboto-Bold", Helvetica;
         font-size: 25px;
         font-weight: 700;
-        height: 29px;
-        justify-content: center;
-        left: 217px;
         letter-spacing: 0;
-        line-height: normal;
-        position: fixed;
         text-align: center;
-        top: 120px;
-        width: 345px;
-}
-
-.desktop .sidebar-instance {
-        left: 0 !important;
-        position: fixed !important;
-        top: 0 !important;
-        z-index: 2 !important;
-}
-
-.desktop .rectangle-2 {
-        background-color: #9fcbe3;
-        left: 579px;
-        position: fixed;
-        top: 100px;
-        width: 957px;
-        z-index: 3;
 }
 
 .desktop .group-3 {
@@ -91,9 +86,16 @@
         z-index: 5 !important;
 }
 
-.desktop .header-instance {
-        left: 0 !important;
-        position: fixed !important;
-        top: 0 !important;
-        z-index: 6 !important;
+.loading {
+        margin-top: 20px;
+        margin-left: 10px;
+        font-family: "Roboto-Bold", Helvetica;
+        font-size: 20px;
+}
+
+.error {
+        margin-top: 20px;
+        margin-left: 10px;
+        font-family: "Roboto-Bold", Helvetica;
+        font-size: 20px;
 }

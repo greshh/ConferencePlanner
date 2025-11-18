@@ -1,14 +1,17 @@
 import React from "react";
 import "./style.css";
 
-export const Header = ({ className }) => {
+export const Header = () => {
   return (
-    <div className={`header ${className}`}>
-      <img
+    <div className={`header`}>
+      <div className="logo">
+        <img
         className="image"
         alt="Image"
-        src="https://c.animaapp.com/NoNNVYFT/img/image-1-1@2x.png"
-      />
+        src="/icons/header/yfc-logo.png"
+        />
+      </div>
+      <div></div>
     </div>
   );
 };

@@ -1,47 +1,33 @@
 .add-a-task {
         background-color: #9fcbe3e6;
         border-radius: 20px;
-        height: 60px;
-        left: 20px;
+        height: 7vh;
+        width: 90%;
+        display: flex;
+        flex-direction: row;
         position: relative;
-        top: 20px;
-        width: 345px;
 }
 
-.add-a-task .div {
-        align-items: center;
-        color: #000000;
+.add-a-task .text {
         display: flex;
+        color: #000000;
         font-family: "Roboto", Helvetica;
         font-size: 20px;
         font-weight: 700;
-        height: 100%;
-        justify-content: center;
-        left: 15.36%;
-        letter-spacing: 0;
-        line-height: 60px;
-        position: absolute;
-        top: 0;
-        white-space: nowrap;
-        width: 27.83%;
+        width: 80%;
+        align-items: center;
+        justify-content: left;
 }
 
-.add-a-task .text-wrapper-2 {
-        align-items: center;
-        color: #000000;
+.add-a-task .plus {
         display: flex;
+        color: #000000;
         font-family: "Roboto", Helvetica;
         font-size: 30px;
         font-weight: 400;
-        height: 100%;
+        width: 20%;
+        align-items: center;
         justify-content: center;
-        left: 4.93%;
-        letter-spacing: 0;
-        line-height: 60px;
-        position: absolute;
-        top: 0;
-        white-space: nowrap;
-        width: 5.22%;
 }
 
 .add-a-task:hover {

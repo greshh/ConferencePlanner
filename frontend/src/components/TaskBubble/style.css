@@ -1,24 +1,36 @@
 .task-bubble {
-        background-image: url(https://c.animaapp.com/NoNNVYFT/img/rectangle-5-15.svg);
-        background-size: 100% 100%;
+        background-color: #EEEEEE;
         border-radius: 10px;
         display: flex;
-        gap: 17px;
-        left: 10px;
+        flex-direction: row;
         position: relative;
-        top: 20px;
-        width: 345px;
+        width: 90%;
+        min-height: 50px;
 }
 
-.task-bubble .ellipse {
-        aspect-ratio: 1;
-        border: 1px solid;
-        border-color: #000000;
-        border-radius: 10px;
-        height: 20px;
-        margin-left: 16px;
-        margin-top: 15px;
-        width: 20px;
+.task-bubble .checkbox {
+        width: 20%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+}
+
+.task-bubble .check-unchecked {
+        background-image: url("/icons/task-bubble/Unchecked.svg");
+        height: 40%;
+        width: 40%;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+}
+
+.task-bubble .check-checked {
+        background-image: url("/icons/task-bubble/Checked.svg");
+        height: 40%;
+        width: 40%;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
 }
 
 .task-bubble .text-wrapper {
@@ -26,12 +38,10 @@
         color: #000000;
         display: flex;
         font-family: "Roboto", Helvetica;
-        font-size: 20px;
+        font-size: 15px;
         font-weight: 400;
-        height: 50px;
         justify-content: left;
         letter-spacing: 0;
-        line-height: 50px;
         width: 292px;
 }
 
