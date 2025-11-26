@@ -9,6 +9,7 @@ export const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedTask, selectTask] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -26,6 +27,11 @@ export const TaskList = () => {
     })();
   }, []);
 
+  const loadTask = async (id) => {
+    const data = tasks.at(id);
+    selectTask(tasks.at(id));
+  };
+
   return (
     <div className="desktop">
       <div className="header">
@@ -36,23 +42,25 @@ export const TaskList = () => {
       </div>
       <div className="content">
         <div className="left-panel">
-          <Sidebar style={{order: `1` }} />
-          <div style={{order: `2`, margin:`20vh 0 10vh 0`, width: `20vw`}}>
+          <Sidebar style={{ order: `1` }} />
+          <div style={{ order: `2`, margin: `20vh 0 10vh 0`, width: `20vw` }}>
             {loading ? (
               <div className="loading">Loading tasks…</div>
             ) : error ? (
-              alert(error)
+              <div className="error">{error}</div>
             ) : (
               tasks.map((t) => {
-                const task_id = t.task_i;
+                const task_id = t.task_id;
                 const task_name = t.task_name;
                 return (
                   <div
                     key={task_id}
+                    onClick={() => selectTask(tasks.at(task_id-1))}
                     style={{
                       display: `flex`,
                       marginBottom: `5%`,
-                      justifyContent: `center`
+                      justifyContent: `center`,
+                      cursor: 'pointer'
                     }}
                   >
                     <TaskBubble task={task_name} />
@@ -62,7 +70,24 @@ export const TaskList = () => {
             )}
           </div>
         </div>
+
+        <div className="right-panel">
+          {selectedTask ? (
+            <div className="task-details">
+              <h2>{selectedTask.task_name}</h2>
+              {selectedTask.description && <p>{selectedTask.description}</p>}
+              {selectedTask.due_date && (
+                <p>Due: {new Date(selectedTask.due_date).toLocaleString()}</p>
+              )}
+              {/* render any other fields returned by the Prisma query */}
+              <button onClick={() => selectTask(null)}>Close</button>
+            </div>
+          ) : (
+            <div className="placeholder">Select a task to view details</div>
+          )}
+        </div>
       </div>
+
       <div className="add-a-task-panel">
         <AddATask className="add-a-task-instance" />
       </div>

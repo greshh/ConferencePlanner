@@ -32,6 +32,13 @@ html, body {
         position: relative;
 }
 
+.desktop .right-panel {
+        margin-top: 10vh;
+        min-width: 70vw;
+        position: relative;
+        color: #000000;
+}
+
 .desktop .task-heading {
         background-color: #fcfcfc;
         height: 10vh;
