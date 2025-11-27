@@ -38,4 +38,21 @@ app.get("/assigned/:task_id", async (req, res) => {
   res.json(assigned);
 });
 
+app.get("/assigned-committees/:task_id", async (req, res) => {
+  const assigned_committees = await prisma.task_committee.findMany({
+    where: {
+      task_id: parseInt(req.params.task_id),
+    },
+    select: {
+      task_committee_id: true,
+      committee: {
+        select: {
+          committee_name: true,
+        },
+      },
+    },
+  });
+  res.json(assigned_committees);
+});
+
 app.listen(3000, () => console.log("Server running on port 3000"));

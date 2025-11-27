@@ -11,6 +11,7 @@ export const TaskList = () => {
   const [error, setError] = useState(null);
   const [selectedTask, selectTask] = useState(null);
   const [assignment, setAssignment] = useState([]);
+  const [committees, setCommittees] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -30,10 +31,14 @@ export const TaskList = () => {
 
   const loadTask = async (id) => {
     try {
-      const res = await fetch("http://localhost:3000/assigned/" + id);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setAssignment(Array.isArray(data) ? data : []);
+      const res1 = await fetch("http://localhost:3000/assigned/" + id);
+      if (!res1.ok) throw new Error(`HTTP ${res1.status}`);
+      const assigned_data = await res1.json();
+      setAssignment(Array.isArray(assigned_data) ? assigned_data : []);
+      const res2 = await fetch("http://localhost:3000/assigned-committees/" + id);
+      if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
+      const committee_data = await res2.json();
+      setCommittees(Array.isArray(committee_data) ? committee_data : []);
       selectTask(tasks.at(id-1));
     } catch (err) {
       console.error("Failed to load task:", err);
@@ -90,6 +95,11 @@ export const TaskList = () => {
               {assignment && assignment.map((a) => (
                 <p key={a.assignment_id}>
                   Assigned: {a.member.first_name} {a.member.last_name}
+                </p>
+              ))}
+              {committees && committees.map((c) => (
+                <p key={c.task_committee_id}>
+                  Committees: {c.committee.committee_name}
                 </p>
               ))}
               <button onClick={() => selectTask(null)}>Close</button>
