@@ -3,6 +3,11 @@ html, body {
         padding: 0;
 }
 
+h2 {
+        font-size: 30px;
+        font-weight: bold;
+}
+
 #root {
         min-height: 100vh;
 }
@@ -38,6 +43,28 @@ html, body {
         min-width: 70vw;
         position: relative;
         color: #000000;
+}
+
+.desktop .task-selected {
+        display: flex;
+        background-color: #EEEEEE;
+        min-height: 90vh;
+        justify-content: stretch;
+}
+
+.desktop .current-task {
+        background-color: #FDFDFD;
+        margin: 2.5% 2.5%;
+        min-width: 95%;
+        border-radius: 10px;
+}
+
+.desktop .task-details {
+        margin: 4% 4%;
+}
+
+.desktop .due-date {
+        font-size: 20px;
 }
 
 .desktop .task-heading {

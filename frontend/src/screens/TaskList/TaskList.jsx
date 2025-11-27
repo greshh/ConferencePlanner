@@ -86,26 +86,30 @@ export const TaskList = () => {
 
         <div className="right-panel">
           {selectedTask ? (
-            <div className="task-details">
-              <h2>{selectedTask.task_name}</h2>
-              {selectedTask.description && <p>{selectedTask.description}</p>}
-              {selectedTask.due_date && (
-                <p>Due: {new Date(selectedTask.due_date).toLocaleString()}</p>
-              )}
-              {assignment && assignment.map((a) => (
-                <p key={a.assignment_id}>
-                  Assigned: {a.member.first_name} {a.member.last_name}
-                </p>
-              ))}
-              {committees && committees.map((c) => (
-                <p key={c.task_committee_id}>
-                  Committees: {c.committee.committee_name}
-                </p>
-              ))}
-              <button onClick={() => selectTask(null)}>Close</button>
+            <div className="task-selected">
+              <div className="current-task">
+                <div className="task-details">
+                  <h2>{selectedTask.task_name.toUpperCase()}</h2>
+                  {selectedTask.due_date && (
+                    <p className="due-date">Due Date: {new Date(selectedTask.due_date).toISOString().split('T')[0]}</p>
+                  )}
+                  {selectedTask.description && <p>{selectedTask.description}</p>}
+                  {assignment && assignment.map((a) => (
+                    <p key={a.assignment_id}>
+                      Assigned: {a.member.first_name} {a.member.last_name}
+                    </p>
+                  ))}
+                  {committees && committees.map((c) => (
+                    <p key={c.task_committee_id}>
+                      Committees: {c.committee.committee_name}
+                    </p>
+                  ))}
+                  <button onClick={() => selectTask(null)}>Close</button>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="placeholder">Select a task to view details</div>
+            <div/>
           )}
         </div>
       </div>
