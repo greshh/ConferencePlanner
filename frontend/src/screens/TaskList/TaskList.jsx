@@ -10,6 +10,7 @@ export const TaskList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTask, selectTask] = useState(null);
+  const [assignment, setAssignment] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -28,8 +29,15 @@ export const TaskList = () => {
   }, []);
 
   const loadTask = async (id) => {
-    const data = tasks.at(id);
-    selectTask(tasks.at(id));
+    try {
+      const res = await fetch("http://localhost:3000/assigned/" + id);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setAssignment(Array.isArray(data) ? data : []);
+      selectTask(tasks.at(id-1));
+    } catch (err) {
+      console.error("Failed to load task:", err);
+    }
   };
 
   return (
@@ -55,7 +63,7 @@ export const TaskList = () => {
                 return (
                   <div
                     key={task_id}
-                    onClick={() => selectTask(tasks.at(task_id-1))}
+                    onClick={() => loadTask(task_id)}
                     style={{
                       display: `flex`,
                       marginBottom: `5%`,
@@ -79,7 +87,11 @@ export const TaskList = () => {
               {selectedTask.due_date && (
                 <p>Due: {new Date(selectedTask.due_date).toLocaleString()}</p>
               )}
-              {/* render any other fields returned by the Prisma query */}
+              {assignment && assignment.map((a) => (
+                <p key={a.assignment_id}>
+                  Assigned: {a.member.first_name} {a.member.last_name}
+                </p>
+              ))}
               <button onClick={() => selectTask(null)}>Close</button>
             </div>
           ) : (
