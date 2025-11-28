@@ -91,6 +91,7 @@ model task {
   task_name      String           @db.VarChar(45)
   due_date       DateTime?        @db.Date
   description    String?          @db.VarChar(100)
+  completed      Boolean
   assignment     assignment[]
   task_committee task_committee[]
   workflow_task  workflow_task[]
@@ -117,6 +118,7 @@ model workflow_task {
   workflow_task_id Int       @id @default(autoincrement())
   workflow_id      Int?
   task_id          Int?
+  order_index      Int
   task             task?     @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_workflowtask_task")
   workflow         workflow? @relation(fields: [workflow_id], references: [workflow_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_workflowtask_workflow")
 

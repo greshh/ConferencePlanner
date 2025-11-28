@@ -19,7 +19,7 @@ export const TaskList = () => {
         const res = await fetch("http://localhost:3000/tasks");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        setTasks(Array.isArray(data) ? data : data?.tasks ?? []);
+        setTasks(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to load tasks:", err);
         setError(err.message || "Failed to load tasks");
@@ -39,7 +39,7 @@ export const TaskList = () => {
       if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
       const committee_data = await res2.json();
       setCommittees(Array.isArray(committee_data) ? committee_data : []);
-      selectTask(tasks.at(id-1));
+      selectTask(tasks.find((x) => x.task_id === id) ?? null);
     } catch (err) {
       console.error("Failed to load task:", err);
     }
@@ -76,7 +76,7 @@ export const TaskList = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    <TaskBubble task={task_name} />
+                    <TaskBubble id={task_id} task={task_name} completed={t.completed} />
                   </div>
                 );
               })
