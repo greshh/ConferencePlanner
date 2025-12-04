@@ -4,7 +4,8 @@ import "./style.css";
 
 export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
     const [assignment, setAssignment] = useState({ members: [], committees: [] });
-  
+    const [memberClicked, setMemberClicked] = useState(false);
+
     useEffect(() => {
       const fetchAssignment = async () => {
         const data = await loadAssigned(task.task_id);
@@ -31,6 +32,11 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
         console.error("Failed to update task completed:", err);
       }
     };
+
+    const toggleMember = (memberClicked) => {
+      const newValue = !memberClicked;
+      setMemberClicked(newValue);
+    }
 
   return (
     <div>
@@ -63,7 +69,12 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                           onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                         />
                       ))}
-                      <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
+                      <div className="member-dropdown" onClick={() => toggleMember(memberClicked)}>
+                        <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned" style={{position: "relative"}}></img>
+                        <div className="member-content" style={{display: memberClicked ? "block" : "none"}}>
+                          <a href="#">Link 1</a>
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>

@@ -42,7 +42,6 @@ app.get("/assigned/:task_id", async (req, res) => {
           member_id: true,
           first_name: true,
           last_name: true,
-          committee: true,
         },
       },
     },

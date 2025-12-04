@@ -32,6 +32,17 @@
   margin-bottom: 20px;
 }
 
+.member-content {
+  /* display: none; */
+  position: absolute;
+  background-color: black;
+  min-width: 200px;
+}
+/* 
+.member-dropdown:click .member-content {
+  display: block;
+} */
+
 input {
   border-radius: 5px;
 }
