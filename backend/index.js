@@ -30,9 +30,9 @@ app.get("/assigned/:task_id", async (req, res) => {
       assignment_id: true,
       member: {
         select: {
+          member_id: true,
           first_name: true,
           last_name: true,
-          profile_pic: true,
         },
       },
     },

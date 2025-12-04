@@ -104,7 +104,7 @@ export const TaskList = () => {
                           {assignment.map((m) => (
                             <img
                               key={m.assignment_id}
-                              src={m.member.profile_pic}
+                              src={'https://storage.googleapis.com/conference_planner_pfp/member/'+m.member.member_id+'.jpg'}
                               className="avatar"
                               alt={m.member.first_name}
                               title={m.member.first_name+' '+m.member.last_name}
