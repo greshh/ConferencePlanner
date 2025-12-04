@@ -3,27 +3,6 @@ html, body {
         padding: 0;
 }
 
-button {
-        background-color: #9fcbe3e6;
-        font-family: "Roboto-Bold", Helvetica;
-        font-weight: bold;
-        border-radius: 10px;
-        border-color: rgba(0,0,0,0);
-        font-size: 15px;
-        padding: 4px 10px;
-}
-
-button:hover {
-        box-shadow: 0px 2px 8px #00000040;
-        transition: box-shadow 0.2s ease;
-        cursor: pointer;
-}
-
-h2 {
-        font-size: 30px;
-        font-weight: bold;
-}
-
 #root {
         min-height: 100vh;
 }
@@ -75,14 +54,6 @@ h2 {
         border-radius: 10px;
 }
 
-.desktop .task-details {
-        margin: 4% 4%;
-}
-
-.desktop .due-date {
-        font-size: 20px;
-}
-
 .desktop .task-heading {
         background-color: #fcfcfc;
         height: 10vh;
@@ -123,23 +94,6 @@ h2 {
         text-align: center;
 }
 
-.desktop .group-3 {
-        background-color: #fcfcfc;
-        height: 126px;
-        left: 200px;
-        position: fixed;
-        top: 569px;
-        width: 379px;
-        z-index: 4;
-}
-
-.desktop .add-a-task-instance {
-        left: 217px !important;
-        position: fixed !important;
-        top: 589px !important;
-        z-index: 5 !important;
-}
-
 .loading {
         margin-top: 20px;
         margin-left: 10px;
@@ -152,19 +106,4 @@ h2 {
         margin-left: 10px;
         font-family: "Roboto-Bold", Helvetica;
         font-size: 20px;
-}
-
-.avatar-group {
-        display: flex;
-        align-items: center;
-        justify-content: right;
-}
-
-.avatar {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid white;
-        margin-left: -6px;
 }

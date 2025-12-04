@@ -1,0 +1,39 @@
+h2 {
+        font-size: 30px;
+        font-weight: bold;
+}
+
+button {
+        background-color: #9fcbe3e6;
+        font-family: "Roboto-Bold", Helvetica;
+        font-weight: bold;
+        border-radius: 10px;
+        border-color: rgba(0,0,0,0);
+        font-size: 15px;
+        padding: 4px 10px;
+}
+
+button:hover {
+        box-shadow: 0px 2px 8px #00000040;
+        transition: box-shadow 0.2s ease;
+        cursor: pointer;
+}
+
+.due-date {
+  font-size: 20px;
+}
+
+.avatar-group {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  margin-left: -6px;
+}

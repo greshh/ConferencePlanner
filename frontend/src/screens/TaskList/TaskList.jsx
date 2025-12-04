@@ -3,6 +3,7 @@ import { AddATask } from "../../components/AddATask";
 import { Header } from "../../components/Header";
 import { Sidebar } from "../../components/Sidebar";
 import { TaskBubble } from "../../components/TaskBubble";
+import { TaskDetails } from "./TaskDetails/TaskDetails";
 import "./style.css";
 
 export const TaskList = () => {
@@ -10,11 +11,9 @@ export const TaskList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTask, selectTask] = useState(null);
-  const [assignment, setAssignment] = useState([]);
-  const [committees, setCommittees] = useState([]);
 
   useEffect(() => {
-    (async () => {
+    const fetchTasks = async () => {
       try {
         const res = await fetch("http://localhost:3000/tasks");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -26,24 +25,10 @@ export const TaskList = () => {
       } finally {
         setLoading(false);
       }
-    })();
+    };
+  
+    fetchTasks();
   }, []);
-
-  const loadTask = async (id) => {
-    try {
-      const res1 = await fetch("http://localhost:3000/assigned/" + id);
-      if (!res1.ok) throw new Error(`HTTP ${res1.status}`);
-      const assigned_data = await res1.json();
-      setAssignment(Array.isArray(assigned_data) ? assigned_data : []);
-      const res2 = await fetch("http://localhost:3000/assigned-committees/" + id);
-      if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
-      const committee_data = await res2.json();
-      setCommittees(Array.isArray(committee_data) ? committee_data : []);
-      selectTask(tasks.find((x) => x.task_id === id) ?? null);
-    } catch (err) {
-      console.error("Failed to load task:", err);
-    }
-  };
 
   return (
     <div className="desktop">
@@ -68,7 +53,7 @@ export const TaskList = () => {
                 return (
                   <div
                     key={task_id}
-                    onClick={() => loadTask(task_id)}
+                    onClick={() => selectTask(tasks.at(task_id-1))}
                     style={{
                       display: `flex`,
                       marginBottom: `5%`,
@@ -88,40 +73,8 @@ export const TaskList = () => {
           {selectedTask ? (
             <div className="task-selected">
               <div className="current-task">
-                <div className="task-details">
-                  <h2>{selectedTask.task_name.toUpperCase()}</h2>
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <div>
-                      {selectedTask.due_date && (
-                        <p className="due-date">Due Date: {new Date(selectedTask.due_date).toISOString().split('T')[0]}</p>
-                      )}
-                      {selectedTask.description && <p>{selectedTask.description}</p>}
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ lineHeight: '1px' }}>Assigned:</p>
-                      {assignment && assignment.length > 0 ? (
-                        <div className="avatar-group">
-                          {assignment.map((m) => (
-                            <img
-                              key={m.assignment_id}
-                              src={'https://storage.googleapis.com/conference_planner_pfp/member/'+m.member.member_id+'.jpg'}
-                              className="avatar"
-                              alt={m.member.first_name}
-                              title={m.member.first_name+' '+m.member.last_name}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <p style={{ fontStyle: 'italic' }}>No one</p>
-                      )}
-                      {committees && committees.map((c) => (
-                        <p key={c.task_committee_id}>
-                          Committees: {c.committee.committee_name}
-                        </p> 
-                      ))}
-                    </div>
-                  </div>
-                  <button onClick={() => selectTask(null)}>Close</button>
+                <div style={{margin: '4% 4%'}}>
+                  <TaskDetails task={selectedTask} selectTask={selectTask}/>
                 </div>
               </div>
             </div>
@@ -132,7 +85,13 @@ export const TaskList = () => {
       </div>
 
       <div className="add-a-task-panel">
-        <AddATask className="add-a-task-instance" />
+        <AddATask style={
+          {left: `217px !important`,
+            position: `fixed !important`,
+            top: `589px !important`,
+            zIndex: `5 !important`
+          }
+        } />
       </div>
     </div>
   );
