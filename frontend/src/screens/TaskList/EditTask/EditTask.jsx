@@ -56,10 +56,11 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                       {assignment.members.map((m) => (
                         <img
                           key={m.assignment_id}
-                          src={'https://storage.googleapis.com/conference_planner_pfp/member/'+m.member.member_id+'.jpg'}
+                          src={`https://storage.googleapis.com/conference_planner_pfp/member/${m.member.member_id}.jpg`}
                           className="avatar"
                           alt={m.member.first_name}
-                          title={m.member.first_name+' '+m.member.last_name}
+                          title={`${m.member.first_name} ${m.member.last_name}`}
+                          onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                         />
                       ))}
                       <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
@@ -82,7 +83,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                     const refreshedTask = await fetch(`http://localhost:3000/task/${task.task_id}`).then(res => res.json());
                     setTask(refreshedTask);
                     const refreshedTasks = await fetch("http://localhost:3000/tasks").then(res => res.json());
-                    setTasks(refreshedTasks); // update the tasks array
+                    setTasks(refreshedTasks);
                     setPanel(1); 
                   }}>Save</button>
                 <button type="button" onClick={() => { setPanel(1) }}>Discard</button>
