@@ -40,20 +40,6 @@ html, body {
         color: #000000;
 }
 
-.desktop .task-selected {
-        display: flex;
-        background-color: #EEEEEE;
-        min-height: 90vh;
-        justify-content: stretch;
-}
-
-.desktop .current-task {
-        background-color: #FDFDFD;
-        margin: 2.5% 2.5%;
-        min-width: 95%;
-        border-radius: 10px;
-}
-
 .desktop .task-heading {
         background-color: #fcfcfc;
         height: 10vh;

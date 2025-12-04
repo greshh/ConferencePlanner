@@ -1,0 +1,51 @@
+.task-selected {
+  display: flex;
+  background-color: #EEEEEE;
+  min-height: 90vh;
+  justify-content: stretch;
+}
+
+.current-task {
+  background-color: #FDFDFD;
+  margin: 2.5% 2.5%;
+  min-width: 95%;
+  border-radius: 10px;
+}
+
+.add-assigned {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  margin-left: -6px;
+  cursor: pointer;
+}
+
+.task-name {
+  font-size: 30px !important;
+  color: #999999;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+input {
+  border-radius: 5px;
+}
+
+input[type="date"] {
+  font-family: "Roboto-Bold", Helvetica;
+  font-size: 20px;
+  border-width: 1px;
+}
+
+textarea {
+  font-family: "Roboto-Bold", Helvetica;
+  font-size: 15px;
+  padding: 1vh;
+  border-radius: 5px;
+  resize: none;
+}

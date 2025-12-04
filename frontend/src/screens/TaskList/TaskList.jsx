@@ -4,6 +4,7 @@ import { Header } from "../../components/Header";
 import { Sidebar } from "../../components/Sidebar";
 import { TaskBubble } from "../../components/TaskBubble";
 import { TaskDetails } from "./TaskDetails/TaskDetails";
+import { EditTask } from "./EditTask/EditTask";
 import "./style.css";
 
 export const TaskList = () => {
@@ -11,6 +12,7 @@ export const TaskList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTask, selectTask] = useState(null);
+  const [rightPanel, setPanel] = useState(0);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -53,7 +55,7 @@ export const TaskList = () => {
                 return (
                   <div
                     key={task_id}
-                    onClick={() => selectTask(tasks.at(task_id-1))}
+                    onClick={() => {selectTask(tasks.at(task_id-1)); setPanel(1);}}
                     style={{
                       display: `flex`,
                       marginBottom: `5%`,
@@ -70,17 +72,13 @@ export const TaskList = () => {
         </div>
 
         <div className="right-panel">
-          {selectedTask ? (
-            <div className="task-selected">
-              <div className="current-task">
-                <div style={{margin: '4% 4%'}}>
-                  <TaskDetails task={selectedTask} selectTask={selectTask}/>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div/>
-          )}
+          {
+            {
+              0: <div/>,
+              1: <TaskDetails task={selectedTask} selectTask={selectTask} setPanel={setPanel} />,
+              2: <EditTask task={selectedTask} setPanel={setPanel} setTask={selectTask} setTasks={setTasks} />
+            }[rightPanel]
+          }
         </div>
       </div>
 
