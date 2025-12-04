@@ -9,6 +9,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/profile-pics", express.static("profile-pics"));
 
 app.get("/tasks", async (req, res) => {
   const tasks = await prisma.task.findMany();
@@ -31,6 +32,7 @@ app.get("/assigned/:task_id", async (req, res) => {
         select: {
           first_name: true,
           last_name: true,
+          profile_pic: true,
         },
       },
     },

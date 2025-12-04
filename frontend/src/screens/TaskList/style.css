@@ -137,3 +137,18 @@ h2 {
         font-family: "Roboto-Bold", Helvetica;
         font-size: 20px;
 }
+
+.avatar-group {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+}
+
+.avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+        margin-left: -6px;
+}

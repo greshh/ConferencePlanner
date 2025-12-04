@@ -36,6 +36,7 @@ model committee_head {
   phone_number      String?    @db.VarChar(13)
   email             String?    @db.VarChar(100)
   committee_id      Int?
+  profile_pic       String?    @db.VarChar(255)
   committee         committee? @relation(fields: [committee_id], references: [committee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_head_committee")
 
   @@index([committee_id], map: "fk_head_committee_idx")
@@ -60,6 +61,7 @@ model member {
   chapter       String       @db.VarChar(45)
   phone_number  String?      @db.VarChar(13)
   email         String?      @db.VarChar(100)
+  profile_pic   String?      @db.VarChar(255)
   assignment    assignment[]
   membership    membership[]
 }

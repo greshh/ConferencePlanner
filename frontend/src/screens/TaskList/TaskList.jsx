@@ -90,20 +90,37 @@ export const TaskList = () => {
               <div className="current-task">
                 <div className="task-details">
                   <h2>{selectedTask.task_name.toUpperCase()}</h2>
-                  {selectedTask.due_date && (
-                    <p className="due-date">Due Date: {new Date(selectedTask.due_date).toISOString().split('T')[0]}</p>
-                  )}
-                  {selectedTask.description && <p>{selectedTask.description}</p>}
-                  {assignment && assignment.map((a) => (
-                    <p key={a.assignment_id}>
-                      Assigned: {a.member.first_name} {a.member.last_name}
-                    </p>
-                  ))}
-                  {committees && committees.map((c) => (
-                    <p key={c.task_committee_id}>
-                      Committees: {c.committee.committee_name}
-                    </p>
-                  ))}
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <div>
+                      {selectedTask.due_date && (
+                        <p className="due-date">Due Date: {new Date(selectedTask.due_date).toISOString().split('T')[0]}</p>
+                      )}
+                      {selectedTask.description && <p>{selectedTask.description}</p>}
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <p style={{ lineHeight: '1px' }}>Assigned:</p>
+                      {assignment && assignment.length > 0 ? (
+                        <div className="avatar-group">
+                          {assignment.map((m) => (
+                            <img
+                              key={m.assignment_id}
+                              src={m.member.profile_pic}
+                              className="avatar"
+                              alt={m.member.first_name}
+                              title={m.member.first_name+' '+m.member.last_name}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <p style={{ fontStyle: 'italic' }}>No one</p>
+                      )}
+                      {committees && committees.map((c) => (
+                        <p key={c.task_committee_id}>
+                          Committees: {c.committee.committee_name}
+                        </p> 
+                      ))}
+                    </div>
+                  </div>
                   <button onClick={() => selectTask(null)}>Close</button>
                 </div>
               </div>
