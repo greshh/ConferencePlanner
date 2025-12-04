@@ -16,7 +16,6 @@ export const TaskDetails = ({ task, selectTask, setPanel }) => {
     fetchAssignment();
   }, [selectedTask.task_id]);
 
-  if (loading) return <p>Loading...</p>;
   if (assignment.error) return <p>Error: {assignment.error}</p>;
 
   return (

@@ -55,7 +55,11 @@ export const TaskList = () => {
                 return (
                   <div
                     key={task_id}
-                    onClick={() => {selectTask(tasks.at(task_id-1)); setPanel(1);}}
+                    onClick={() => {
+                      setPanel(0); // temporarily close panel
+                      selectTask({ ...t });
+                      setTimeout(() => setPanel(1), 0); // reopen panel
+                    }}
                     style={{
                       display: `flex`,
                       marginBottom: `5%`,
