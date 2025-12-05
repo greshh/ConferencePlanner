@@ -33,15 +33,12 @@
 }
 
 .member-content {
-  /* display: none; */
   position: absolute;
-  background-color: black;
-  min-width: 200px;
+  background-color: grey;
+  text-align: left;
+  min-width: 100px;
+  right: 0;
 }
-/* 
-.member-dropdown:click .member-content {
-  display: block;
-} */
 
 input {
   border-radius: 5px;
@@ -59,4 +56,9 @@ textarea {
   padding: 1vh;
   border-radius: 5px;
   resize: none;
+}
+
+.add-assigned:hover {
+  box-shadow: 0px 2px 8px grey;
+  transition: box-shadow 0.2s ease;
 }

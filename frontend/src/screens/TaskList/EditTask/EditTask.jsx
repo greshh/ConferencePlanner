@@ -69,10 +69,11 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                           onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                         />
                       ))}
-                      <div className="member-dropdown" onClick={() => toggleMember(memberClicked)}>
-                        <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned" style={{position: "relative"}}></img>
+                      <div className="member-dropdown" onClick={() => toggleMember(memberClicked)} style={{position: "relative"}}>
+                        <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
                         <div className="member-content" style={{display: memberClicked ? "block" : "none"}}>
-                          <a href="#">Link 1</a>
+                          <p>rah</p>
+                          <p>hello there</p>
                         </div>
                       </div>
                     </div>
