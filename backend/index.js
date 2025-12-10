@@ -101,10 +101,10 @@ app.get("/assigned-committees/:task_id", async (req, res) => {
 
 app.patch("/update-task/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { completed, task_name, due_date, description } = req.body;
+  const { completed, task_name, due_date, description, assigned_members } = req.body;
 
   if (typeof id !== "number" || Number.isNaN(id)) {
-    return res.status(400).json({ error: "Invalid id" });
+    return res.status(400).json({ error: "Invalid ID" });
   }
 
   try {
@@ -115,12 +115,43 @@ app.patch("/update-task/:id", async (req, res) => {
         ...(task_name !== undefined && { task_name }),
         ...(due_date !== undefined && { due_date: new Date(due_date) }),
         ...(description !== undefined && { description }),
+        ...(assigned_members !== undefined && { assigned_members }),
       },
     });
 
     res.json(updated);
   } catch (err) {
     console.error("Failed to update task:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
+app.patch("/update-assignment", async (req, res) => {
+  const { task_id, member_id } = req.body;
+  try {
+    const assignment = await prisma.assignment.findFirst({
+      where: {
+        task_id,
+        member_id,
+      },
+    });
+    if (assignment != null) {
+      await prisma.assignment.delete({
+        where: {
+          assignment_id: assignment.assignment_id,
+        },
+      });
+    } else {
+      await prisma.assignment.create({
+        data: {
+          task_id,  
+          member_id,
+        },
+      });
+    }
+    res.json(assignment);
+  } catch (err) {
+    console.error("Failed to update assignment:", err);
     res.status(500).json({ error: err.message || String(err) });
   }
 });
