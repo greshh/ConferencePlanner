@@ -6,6 +6,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
   const [memberClicked, setMemberClicked] = useState(false);
   const [committeeMembers, setCommitteeMembers] = useState([]); // Array by committee then by members
+  const [committeeHeads, setCommitteeHeads] = useState([]); // Array by committee then by committee heads
 
   useEffect(() => {
     const fetchAssignment = async () => {
@@ -16,18 +17,32 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
   }, [task.task_id]);
 
   const fetchCommitteeMembers = async (assignment) => {
-      const members = [];
-      for (const c of assignment.committees) {
-        try {
-          const res = await fetch(`http://localhost:3000/committee-members/${c.committee.committee_id}`);
-          const data = await res.json();
-          members.push(data);
-        } catch (err) {
-          console.error("Failed to load committee members:", err);
-        }
+    const members = [];
+    for (const c of assignment.committees) {
+      try {
+        const res = await fetch(`http://localhost:3000/committee-members/${c.committee.committee_id}`);
+        const data = await res.json();
+        members.push(data);
+      } catch (err) {
+        console.error("Failed to load committee members:", err);
       }
-      setCommitteeMembers(members);
-    };
+    }
+    setCommitteeMembers(members);
+  };
+
+  const fetchCommitteeHeads = async (assignment) => {
+    const committeeHeads = [];
+    for (const c of assignment.committees) {
+      try {
+        const res = await fetch(`http://localhost:3000/committee-heads/${c.committee.committee_id}`);
+        const data = await res.json();
+        committeeHeads.push(data);
+      } catch (err) {
+        console.error("Failed to load committee heads:", err);
+      }
+    }
+    setCommitteeHeads(committeeHeads);
+  };
 
   const updateTask = async () => {
     const task_name = document.getElementById("task-name").value;
@@ -84,16 +99,21 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                           onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                         />
                       ))}
-                      <div className="member-dropdown" onClick={() => {toggleMember(memberClicked); fetchCommitteeMembers(assignment);}} style={{position: "relative"}}>
+                      <div className="member-dropdown" onClick={async () => {
+                          toggleMember(memberClicked); 
+                          await fetchCommitteeMembers(assignment); 
+                          // await fetchCommitteeHeads(assignment); // UNCOMMENT IF COMMITTEE HEADS ARE TO BE DISPLAYED
+                        }} style={{position: "relative"}}>
                         <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
                         <div className="member-content" style={{display: memberClicked ? "block" : "none"}}>
                           {/* Add all committee members for the selected committees */}
-                          {/* {committeeMembers.map((cm) =>
-                              <p>hello</p>
-                          )} */}
                           {committeeMembers.map((committee) => 
                             committee.map((m) => 
                               <p key={m.member.member_id}>{m.member.first_name} {m.member.last_name}</p>
+                          ))}
+                          {committeeHeads.map((committee) => 
+                            committee.map((ch) => 
+                              <p key={ch.committee_head_id}>{ch.first_name} {ch.last_name}</p>
                           ))}
                         </div>
                       </div>
