@@ -49,6 +49,24 @@ app.get("/assigned/:task_id", async (req, res) => {
   res.json(assigned);
 });
 
+app.get("/committee-members/:committee_id", async (req, res) => {
+  const members = await prisma.membership.findMany({
+    where: {
+      committee_id: parseInt(req.params.committee_id),
+    },
+    select: {
+      member: {
+        select: {
+          member_id: true,
+          first_name: true,
+          last_name: true,
+        },
+      },
+    },
+  });
+  res.json(members);
+});
+
 app.get("/assigned-committees/:task_id", async (req, res) => {
   const assigned_committees = await prisma.task_committee.findMany({
     where: {
@@ -58,6 +76,7 @@ app.get("/assigned-committees/:task_id", async (req, res) => {
       task_committee_id: true,
       committee: {
         select: {
+          committee_id: true,
           committee_name: true,
         },
       },

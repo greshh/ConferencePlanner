@@ -3,40 +3,56 @@ import { loadAssigned } from "../../../hooks/loadAssigned";
 import "./style.css";
 
 export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
-    const [assignment, setAssignment] = useState({ members: [], committees: [] });
-    const [memberClicked, setMemberClicked] = useState(false);
+  const [assignment, setAssignment] = useState({ members: [], committees: [] });
+  const [memberClicked, setMemberClicked] = useState(false);
+  const [committeeMembers, setCommitteeMembers] = useState([]); // Array by committee then by members
 
-    useEffect(() => {
-      const fetchAssignment = async () => {
-        const data = await loadAssigned(task.task_id);
-        setAssignment(data);
-      };
-      fetchAssignment();
-    }, [task.task_id]);
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      const data = await loadAssigned(task.task_id);
+      setAssignment(data);
+    };
+    fetchAssignment();
+  }, [task.task_id]);
 
-    const updateTask = async () => {
-      const task_name = document.getElementById("task-name").value;
-      const due_date = document.getElementById("due-date").value;
-      const description = document.getElementById("description").value;
-
-      try {
-        const res = await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ task_name, due_date: new Date(due_date), description }),
-        });
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+  const fetchCommitteeMembers = async (assignment) => {
+      const members = [];
+      for (const c of assignment.committees) {
+        try {
+          const res = await fetch(`http://localhost:3000/committee-members/${c.committee.committee_id}`);
+          const data = await res.json();
+          members.push(data);
+        } catch (err) {
+          console.error("Failed to load committee members:", err);
         }
-      } catch (err) {
-        console.error("Failed to update task completed:", err);
       }
+      console.log(members);
+      setCommitteeMembers(members);
     };
 
-    const toggleMember = (memberClicked) => {
-      const newValue = !memberClicked;
-      setMemberClicked(newValue);
+  const updateTask = async () => {
+    const task_name = document.getElementById("task-name").value;
+    const due_date = document.getElementById("due-date").value;
+    const description = document.getElementById("description").value;
+
+    try {
+      const res = await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_name, due_date: new Date(due_date), description }),
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+    } catch (err) {
+      console.error("Failed to update task completed:", err);
     }
+  };
+
+  const toggleMember = (memberClicked) => {
+    const newValue = !memberClicked;
+    setMemberClicked(newValue);
+  }
 
   return (
     <div>
@@ -69,11 +85,17 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                           onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                         />
                       ))}
-                      <div className="member-dropdown" onClick={() => toggleMember(memberClicked)} style={{position: "relative"}}>
+                      <div className="member-dropdown" onClick={() => {toggleMember(memberClicked); fetchCommitteeMembers(assignment);}} style={{position: "relative"}}>
                         <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
                         <div className="member-content" style={{display: memberClicked ? "block" : "none"}}>
-                          <p>rah</p>
-                          <p>hello there</p>
+                          {/* Add all committee members for the selected committees */}
+                          {/* {committeeMembers.map((cm) =>
+                              <p>hello</p>
+                          )} */}
+                          {committeeMembers.map((committee) => 
+                            committee.map((m) => 
+                              <p key={m.member.member_id}>{m.member.first_name} {m.member.last_name}</p>
+                          ))}
                         </div>
                       </div>
                     </div>
