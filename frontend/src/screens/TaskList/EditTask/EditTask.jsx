@@ -26,7 +26,6 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
           console.error("Failed to load committee members:", err);
         }
       }
-      console.log(members);
       setCommitteeMembers(members);
     };
 
