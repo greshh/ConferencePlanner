@@ -131,9 +131,9 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                 </div>
                 <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
                   <p style={{ lineHeight: '1px' }}>Assigned:</p>
-                  {assignment.members && assignment.members.length > 0 ? (
-                    <div className="avatar-group">
-                      {assignment.members.map((m) => (
+                  <div className="avatar-group">
+                    {assignment.members && assignment.members.length > 0 ? (
+                      assignment.members.map(m => (
                         <img
                           key={m.assignment_id}
                           src={`https://storage.googleapis.com/conference_planner_pfp/member/${m.member.member_id}.jpg`}
@@ -142,84 +142,48 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                           title={`${m.member.first_name} ${m.member.last_name}`}
                           onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                         />
-                      ))}
-                      <div className="member-dropdown" onClick={async () => {
-                          toggleMemberList(memberListOpen); 
-                          await fetchCommitteeMembers(assignment); 
-                          // await fetchCommitteeHeads(assignment); // UNCOMMENT IF COMMITTEE HEADS ARE TO BE DISPLAYED - see 10/12/2025
-                        }} style={{position: "relative"}}>
-                        <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
-                        
-                        {/* FOR MEMBERDROPDOWN COMPONENT */}
-                        <div className="member-content" style={{display: memberListOpen ? "block" : "none"}}>
-                          {/* Add all committee members for the selected committees */}
-                          {committeeMembers.map((committee) => 
-                            committee.map((m) => 
-                              <div className="member-selection" key={m.member.member_id}>
-                                {/* <div className="checkbox">
-                                  <div
-                                    className={checked ? "check-checked" : "check-unchecked"}
-                                    onClick={toggle}
-                                    role="checkbox"
-                                    aria-checked={checked}
-                                    tabIndex={0}
-                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
-                                    style={{ cursor: saving ? 'wait' : 'pointer' }}
-                                  />
-                                </div> */}
-                                <p onClick={()=>toggleMemberChecked(m.member)}>{m.member.first_name} {m.member.last_name}</p>
-                              </div>
-                          ))}
-                          {committeeHeads.map((committee) => 
-                            committee.map((ch) => 
-                              <div className="member-selection">
-                                <p key={ch.committee_head_id}>{ch.first_name} {ch.last_name}</p>
-                              </div>
-                          ))}
-                        </div>
-
+                      )
+                    )) : (
+                      <div/>
+                    )}
+                    <div className="member-dropdown" onClick={async () => {
+                        toggleMemberList(memberListOpen); 
+                        await fetchCommitteeMembers(assignment); 
+                        // await fetchCommitteeHeads(assignment); // UNCOMMENT IF COMMITTEE HEADS ARE TO BE DISPLAYED - see 10/12/2025
+                      }} style={{position: "relative"}}>
+                      <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
+                      
+                      {/* FOR MEMBERDROPDOWN COMPONENT */}
+                      <div className="member-content" style={{display: memberListOpen ? "block" : "none"}}>
+                        {/* Add all committee members for the selected committees */}
+                        {committeeMembers.map((committee) => 
+                          committee.map((m) => 
+                            <div className="member-selection" key={m.member.member_id}>
+                              {/* <div className="checkbox">
+                                <div
+                                  className={checked ? "check-checked" : "check-unchecked"}
+                                  onClick={toggle}
+                                  role="checkbox"
+                                  aria-checked={checked}
+                                  tabIndex={0}
+                                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
+                                  style={{ cursor: saving ? 'wait' : 'pointer' }}
+                                />
+                              </div> */}
+                              <p onClick={()=>toggleMemberChecked(m.member)}>{m.member.first_name} {m.member.last_name}</p>
+                            </div>
+                        ))}
+                        {committeeHeads.map((committee) => 
+                          committee.map((ch) => 
+                            <div className="member-selection">
+                              <p key={ch.committee_head_id}>{ch.first_name} {ch.last_name}</p>
+                            </div>
+                        ))}
                       </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="member-dropdown" onClick={async () => {
-                          toggleMemberList(memberListOpen); 
-                          await fetchCommitteeMembers(assignment); 
-                          // await fetchCommitteeHeads(assignment); // UNCOMMENT IF COMMITTEE HEADS ARE TO BE DISPLAYED - see 10/12/2025
-                        }} style={{position: "relative"}}>
-                        <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
-                        
-                        {/* FOR MEMBERDROPDOWN COMPONENT */}
-                        <div className="member-content" style={{display: memberListOpen ? "block" : "none"}}>
-                          {/* Add all committee members for the selected committees */}
-                          {committeeMembers.map((committee) => 
-                            committee.map((m) => 
-                              <div className="member-selection">
-                                {/* <div className="checkbox">
-                                  <div
-                                    className={checked ? "check-checked" : "check-unchecked"}
-                                    onClick={toggle}
-                                    role="checkbox"
-                                    aria-checked={checked}
-                                    tabIndex={0}
-                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
-                                    style={{ cursor: saving ? 'wait' : 'pointer' }}
-                                  />
-                                </div> */}
-                                <p onClick={()=>toggleMemberChecked(m.member)} key={m.member.member_id}>{m.member.first_name} {m.member.last_name}</p>
-                              </div>
-                          ))}
-                          {committeeHeads.map((committee) => 
-                            committee.map((ch) => 
-                              <div className="member-selection">
-                                <p key={ch.committee_head_id}>{ch.first_name} {ch.last_name}</p>
-                              </div>
-                          ))}
-                        </div>
 
-                      </div>
                     </div>
-                  )}
+                  </div>
+
                   <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
                   {assignment.committees && assignment.committees.map((c) => (
                     <p key={c.task_committee_id} style={{ fontStyle: 'italic', lineHeight: '0.5rem' }}>
