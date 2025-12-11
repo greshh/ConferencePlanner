@@ -40,7 +40,14 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
           <form>
             <div className="task-flex">
                 <div>
-                  <input type="text" className="task-name" id="task-name" defaultValue={task.task_name} style={{ minWidth: '100%' }}></input>
+                  <input 
+                    type="text" 
+                    className="task-name" 
+                    id="task-name" 
+                    maxLength="45" 
+                    defaultValue={task.task_name} 
+                    style={{ minWidth: '100%' }}
+                  ></input>
                 </div>
                 <div style={{ textAlign: 'right', marginRight: '1vw' }}>
                   {task.completed == 1 ? (
@@ -54,7 +61,8 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                   <textarea
                     id="description"
                     defaultValue={task.description}
-                    style={{ minWidth: "100%", marginTop: '1rem', whiteSpace: "pre-wrap" }}
+                    maxLength="1000"
+                    style={{ minWidth: "100%", height: "5rem", marginTop: '1rem', whiteSpace: "pre-wrap" }}
                   ></textarea>
                 </div>
                 <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
