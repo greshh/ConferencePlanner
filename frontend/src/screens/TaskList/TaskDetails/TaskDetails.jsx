@@ -21,9 +21,17 @@ export const TaskDetails = ({ task, selectTask, setPanel }) => {
   return (
     <div className="task-selected">
       <div className="current-task">
-        <div style={{margin: '4% 4%'}}>
-          <h2>{selectedTask.task_name.toUpperCase()}</h2>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <div className="task-flex">
+          <div>
+            <h2>{selectedTask.task_name.toUpperCase()}</h2>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            {task.completed == 1 ? (
+              <p><span style={{ backgroundColor: '#CAFFBF', color: '#355d3c', padding: '5px 10px', borderRadius: '5px' }}>Completed</span></p>
+            ) : (
+              <p><span style={{ backgroundColor: '#FFADAD', color: '#7a2e2e', padding: '5px 10px', borderRadius: '5px' }}>Incomplete</span></p>
+            )}
+          </div>
           <div>
             {selectedTask.due_date && (
               <p className="due-date">Due Date: {(() => {
@@ -39,7 +47,7 @@ export const TaskDetails = ({ task, selectTask, setPanel }) => {
             {selectedTask.description && <p>{selectedTask.description}</p>}
           </div>
           <div style={{ textAlign: 'right' }}>
-            <p style={{ lineHeight: '1px' }}>Assigned:</p>
+            <p style={{ marginBottom: '1px', marginTop: 0 }}>Assigned:</p>
             {assignment.members && assignment.members.length > 0 ? (
               <div className="avatar-group">
                 {assignment.members.map((m) => (
@@ -55,12 +63,12 @@ export const TaskDetails = ({ task, selectTask, setPanel }) => {
             ) : (
               <p style={{ fontStyle: 'italic' }}>No one</p>
             )}
+            <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
             {assignment.committees && assignment.committees.map((c) => (
-              <p key={c.task_committee_id}>
-                Committees: {c.committee.committee_name}
+              <p key={c.task_committee_id} style={{ fontStyle: 'italic', lineHeight: '0.5rem' }}>
+                {c.committee.committee_name}
               </p> 
             ))}
-            </div>
           </div>
           <div style={{display: 'flex', gap: '1rem'}}>
             <button onClick={() => setPanel(2)}>Edit</button>

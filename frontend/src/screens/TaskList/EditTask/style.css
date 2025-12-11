@@ -12,6 +12,13 @@
   border-radius: 10px;
 }
 
+.task-flex {
+  margin: 4% 4%;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto auto;
+}
+
 .add-assigned {
   width: 60px;
   height: 60px;

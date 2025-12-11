@@ -109,17 +109,24 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
     <div>
       <div className="task-selected">
         <div className="current-task">
-          <div style={{margin: '4% 4%'}}>
-            <form>
-              <input type="text" className="task-name" id="task-name" defaultValue={task.task_name} style={{ minWidth: '100%' }}></input>
-              <div style={{ display: 'flex', flexDirection: 'row', gap: '5rem' }}>
-                <div style={{ flex: "1 1 auto"}}>
-                  <p className="due-date"> Due Date: <input type="date" id="due-date" defaultValue={new Date(task.due_date).toISOString().split("T")[0]}></input>
-                  </p>
+          <form>
+            <div className="task-flex">
+                <div>
+                  <input type="text" className="task-name" id="task-name" defaultValue={task.task_name} style={{ minWidth: '100%' }}></input>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  {task.completed == 1 ? (
+                    <p><span style={{ backgroundColor: '#CAFFBF', color: '#355d3c', padding: '5px 10px', borderRadius: '5px' }}>Completed</span></p>
+                  ) : (
+                    <p><span style={{ backgroundColor: '#FFADAD', color: '#7a2e2e', padding: '5px 10px', borderRadius: '5px' }}>Incomplete</span></p>
+                  )}
+                </div>
+                <div>
+                  <p className="due-date"> Due Date: <input type="date" id="due-date" defaultValue={new Date(task.due_date).toISOString().split("T")[0]}></input></p>
                   <textarea
                     id="description"
                     defaultValue={task.description}
-                    style={{ minWidth: "100%", whiteSpace: "pre-wrap" }}
+                    style={{ minWidth: "100%", marginTop: '1rem', whiteSpace: "pre-wrap" }}
                   ></textarea>
                 </div>
                 <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
@@ -148,7 +155,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                           {/* Add all committee members for the selected committees */}
                           {committeeMembers.map((committee) => 
                             committee.map((m) => 
-                              <div className="member-selection">
+                              <div className="member-selection" key={m.member.member_id}>
                                 {/* <div className="checkbox">
                                   <div
                                     className={checked ? "check-checked" : "check-unchecked"}
@@ -160,7 +167,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                                     style={{ cursor: saving ? 'wait' : 'pointer' }}
                                   />
                                 </div> */}
-                                <p onClick={()=>toggleMemberChecked(m.member)} key={m.member.member_id}>{m.member.first_name} {m.member.last_name}</p>
+                                <p onClick={()=>toggleMemberChecked(m.member)}>{m.member.first_name} {m.member.last_name}</p>
                               </div>
                           ))}
                           {committeeHeads.map((committee) => 
@@ -213,28 +220,28 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                       </div>
                     </div>
                   )}
+                  <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
                   {assignment.committees && assignment.committees.map((c) => (
-                    <p key={c.task_committee_id}>
-                      Committees: {c.committee.committee_name}
+                    <p key={c.task_committee_id} style={{ fontStyle: 'italic', lineHeight: '0.5rem' }}>
+                      {c.committee.committee_name}
                     </p> 
                   ))}
                 </div>
-              </div>
-              <div style={{display: 'flex', gap: '1rem'}}>
-                <button type="submit" onClick={async (e) => 
-                  { 
-                    e.preventDefault(); 
-                    await updateTask();
-                    const refreshedTask = await fetch(`http://localhost:3000/task/${task.task_id}`).then(res => res.json());
-                    setTask(refreshedTask);
-                    const refreshedTasks = await fetch("http://localhost:3000/tasks").then(res => res.json());
-                    setTasks(refreshedTasks);
-                    setPanel(1); 
-                  }}>Save</button>
-                <button type="button" onClick={() => { setPanel(1) }}>Discard</button>
-              </div>
-            </form>
-          </div>
+                <div style={{display: 'flex', gap: '1rem'}}>
+                  <button type="submit" onClick={async (e) => 
+                    { 
+                      e.preventDefault(); 
+                      await updateTask();
+                      const refreshedTask = await fetch(`http://localhost:3000/task/${task.task_id}`).then(res => res.json());
+                      setTask(refreshedTask);
+                      const refreshedTasks = await fetch("http://localhost:3000/tasks").then(res => res.json());
+                      setTasks(refreshedTasks);
+                      setPanel(1); 
+                    }}>Save</button>
+                  <button type="button" onClick={() => { setPanel(1) }}>Discard</button>
+                </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
