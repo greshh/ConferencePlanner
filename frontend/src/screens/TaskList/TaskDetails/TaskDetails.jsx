@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { loadAssigned } from "../../../hooks/loadAssigned";
+import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
 import "./style.css";
 
 export const TaskDetails = ({ task, selectTask, setPanel }) => {
@@ -25,7 +26,7 @@ export const TaskDetails = ({ task, selectTask, setPanel }) => {
           <div>
             <h2>{selectedTask.task_name.toUpperCase()}</h2>
           </div>
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'right', marginRight: '1vw' }}>
             {task.completed == 1 ? (
               <p><span style={{ backgroundColor: '#CAFFBF', color: '#355d3c', padding: '5px 10px', borderRadius: '5px' }}>Completed</span></p>
             ) : (
@@ -48,21 +49,23 @@ export const TaskDetails = ({ task, selectTask, setPanel }) => {
           </div>
           <div style={{ textAlign: 'right' }}>
             <p style={{ marginBottom: '1px', marginTop: 0 }}>Assigned:</p>
-            {assignment.members && assignment.members.length > 0 ? (
-              <div className="avatar-group">
-                {assignment.members.map((m) => (
+            <div className="avatar-group">
+              {assignment.members && assignment.members.length > 0 ? (
+                assignment.members.map(m => (
                   <img
                     key={m.assignment_id}
-                    src={'https://storage.googleapis.com/conference_planner_pfp/member/'+m.member.member_id+'.jpg'}
+                    src={`https://storage.googleapis.com/conference_planner_pfp/member/${m.member.member_id}.jpg`}
                     className="avatar"
                     alt={m.member.first_name}
-                    title={m.member.first_name+' '+m.member.last_name}
+                    title={`${m.member.first_name} ${m.member.last_name}`}
+                    onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                   />
-                ))}
-              </div>
-            ) : (
-              <p style={{ fontStyle: 'italic' }}>No one</p>
-            )}
+                )
+              )) : (
+                <div/>
+              )}
+              <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />
+            </div>
             <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
             {assignment.committees && assignment.committees.map((c) => (
               <p key={c.task_committee_id} style={{ fontStyle: 'italic', lineHeight: '0.5rem' }}>
