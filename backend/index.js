@@ -126,6 +126,28 @@ app.patch("/update-task/:id", async (req, res) => {
   }
 });
 
+app.delete("/delete-task/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    await prisma.assignment.deleteMany({
+      where: { task_id: id },
+    });
+    await prisma.task_committee.deleteMany({
+      where: { task_id: id },
+    });
+    await prisma.workflow_task.deleteMany({
+      where: { task_id: id },
+    });
+    const deleted = await prisma.task.delete({
+      where: { task_id: id },
+    });
+    res.json(deleted);
+  } catch (err) {
+    console.error("Failed to delete task:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
 app.patch("/update-assignment", async (req, res) => {
   const { task_id, member_id } = req.body;
   try {

@@ -14,21 +14,22 @@ export const TaskList = () => {
   const [selectedTask, selectTask] = useState(null);
   const [rightPanel, setPanel] = useState(0);
 
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/tasks");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setTasks(Array.isArray(data) ? data : []);
+      console.log(data);
+    } catch (err) {
+      console.error("Failed to load tasks:", err);
+      setError(err.message || "Failed to load tasks");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const res = await fetch("http://localhost:3000/tasks");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setTasks(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error("Failed to load tasks:", err);
-        setError(err.message || "Failed to load tasks");
-      } finally {
-        setLoading(false);
-      }
-    };
-  
     fetchTasks();
   }, []);
 
@@ -79,7 +80,7 @@ export const TaskList = () => {
           {
             {
               0: <div/>,
-              1: <TaskDetails task={selectedTask} selectTask={selectTask} setPanel={setPanel} />,
+              1: <TaskDetails task={selectedTask} selectTask={selectTask} setPanel={setPanel} fetchTasks={fetchTasks} />,
               2: <EditTask task={selectedTask} setPanel={setPanel} setTask={selectTask} setTasks={setTasks} />
             }[rightPanel]
           }

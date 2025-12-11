@@ -61,3 +61,13 @@ button:hover {
   border: 2px solid white;
   margin-left: -6px;
 }
+
+.popup-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  z-index: 999;
+}
