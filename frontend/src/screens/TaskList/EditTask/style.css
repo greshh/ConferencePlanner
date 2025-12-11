@@ -39,17 +39,6 @@
   margin-bottom: 20px;
 }
 
-.member-content {
-  position: absolute;
-  background-color: #FDFDFD;
-  border: 1px solid #999999;
-  border-radius: 10px;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  right: 0;
-}
-
 input {
   border-radius: 5px;
 }
@@ -66,20 +55,4 @@ textarea {
   padding: 1vh;
   border-radius: 5px;
   resize: none;
-}
-
-.member-content p {
-  line-height: 0.5rem;
-  padding: 0.8rem 0.5rem;
-  margin: 0 0;
-}
-
-.member-content p:hover{
-  background-color: #e3e3e3;
-  cursor: pointer;
-}
-
-.member-content {
-  display: flex;
-  flex-direction: column;
 }

@@ -44,7 +44,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
 
   // Checks if a member is currently assigned to the task
   const checkMemberChecked = (memberId) => {
-    return assignment.members.some((m) => m.member_id === memberId);
+    return assignment.members.some((m) => m.member.member_id == memberId);
   }
 
   const toggleMemberChecked = async (member) => {
@@ -52,8 +52,6 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
     const checked = checkMemberChecked(member.member_id);
     const newValue = !checked; // To be used for checkbox UI update
 
-    // return newValue;
-    // setChecked(newValue);
     setSaving(true);
     try {
       const res = await fetch(`http://localhost:3000/update-assignment`, {
@@ -66,39 +64,37 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
       }
     } catch (err) {
       console.error("Failed to update task:", err);
-      // setChecked(!newValue);
+      newValue = checked; // Revert optimistic UI update
     } finally {
       setAssignment(await loadAssigned(task.task_id));
       setSaving(false);
-      //return newValue;
+      return newValue;
     }
   };
 
   return (
-    <div className="member-dropdown" onClick={async () => {
+    <div className="member-dropdown" style={{position: "relative"}}>  
+      <img onClick={async () => {
         toggleMemberList(memberListOpen); 
         await fetchCommitteeMembers(assignment); 
         // await fetchCommitteeHeads(assignment); // UNCOMMENT IF COMMITTEE HEADS ARE TO BE DISPLAYED - see 10/12/2025
-      }} style={{position: "relative"}}>  
-      <img src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
-      
-      {/* FOR MEMBERDROPDOWN COMPONENT */}
-      <div className="member-content" style={{display: memberListOpen ? "block" : "none"}}>
+      }} src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
+      <div className="member-content" style={{ display: memberListOpen ? "block" : "none" }}>
         {/* Add all committee members for the selected committees */}
         {committeeMembers.map((committee) => 
           committee.map((m) => 
             <div className="member-selection" key={m.member.member_id}>
-              {/* <div className="checkbox">
+              <div className="checkbox">
                 <div
-                  className={checked ? "check-checked" : "check-unchecked"}
-                  onClick={toggle}
+                  className={checkMemberChecked(m.member.member_id) ? "check-checked" : "check-unchecked"}
+                  onClick={()=>toggleMemberChecked(m.member)}
                   role="checkbox"
-                  aria-checked={checked}
+                  aria-checked={()=>checkMemberChecked(m.member.member_id)}
                   tabIndex={0}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
                   style={{ cursor: saving ? 'wait' : 'pointer' }}
                 />
-              </div> */}
+              </div>
               <p onClick={()=>toggleMemberChecked(m.member)}>{m.member.first_name} {m.member.last_name}</p>
             </div>
         ))}
