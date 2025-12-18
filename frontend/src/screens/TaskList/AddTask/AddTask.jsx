@@ -54,6 +54,10 @@ export const AddTask = ({ setPanel, setTask, setTasks }) => {
                 <button type="submit" onClick={async (e) => 
                     { 
                       e.preventDefault(); 
+                      if (!document.getElementById("task-name").value) {
+                        alert("Task name is required.");
+                        return;
+                      }
                       const newTask = await createTask();
                       const refreshedTask = await fetch(`http://localhost:3000/task/${newTask.task_id}`).then(res => res.json());
                       setTask(refreshedTask);
