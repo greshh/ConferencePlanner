@@ -56,11 +56,11 @@ html, body {
 
 .desktop .add-a-task-panel {
         background-color: #fcfcfc;
-        height: 10vh;
+        height: 15vh;
         margin-left: 10vw;
         pointer-events: auto;
         position: fixed;
-        margin-top: 90vh;
+        margin-top: 85vh;
         width: 20vw;
         display: flex;
         align-items: center;

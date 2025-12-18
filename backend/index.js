@@ -178,5 +178,23 @@ app.patch("/update-assignment", async (req, res) => {
   }
 });
 
+app.post("/create-task", async (req, res) => {
+  const { task_name, due_date, description } = req.body;
+  try {
+    const newTask = await prisma.task.create({
+      data: {
+        task_name,
+        due_date: new Date(due_date),
+        description,
+        completed: false,
+      },
+    });
+    res.json(newTask);
+  } catch (err) {
+    console.error("Failed to create task:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  } 
+});
+
 
 app.listen(3000, () => console.log("Server running on port 3000"));

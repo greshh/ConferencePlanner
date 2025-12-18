@@ -5,6 +5,7 @@ import { Sidebar } from "../../components/Sidebar";
 import { TaskBubble } from "../../components/TaskBubble";
 import { TaskDetails } from "./TaskDetails/TaskDetails";
 import { EditTask } from "./EditTask/EditTask";
+import { AddTask } from "./AddTask/AddTask";
 import "./style.css";
 
 export const TaskList = () => {
@@ -20,7 +21,6 @@ export const TaskList = () => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
-      console.log(data);
     } catch (err) {
       console.error("Failed to load tasks:", err);
       setError(err.message || "Failed to load tasks");
@@ -81,20 +81,15 @@ export const TaskList = () => {
             {
               0: <div/>,
               1: <TaskDetails task={selectedTask} selectTask={selectTask} setPanel={setPanel} fetchTasks={fetchTasks} />,
-              2: <EditTask task={selectedTask} setPanel={setPanel} setTask={selectTask} setTasks={setTasks} />
-            }[rightPanel]
+              2: <EditTask task={selectedTask} setPanel={setPanel} setTask={selectTask} setTasks={setTasks} />,
+              3: <AddTask setPanel={setPanel} setTask={selectTask} setTasks={setTasks} />
+            } [rightPanel]
           }
         </div>
       </div>
 
       <div className="add-a-task-panel">
-        <AddATask style={
-          {left: `217px !important`,
-            position: `fixed !important`,
-            top: `589px !important`,
-            zIndex: `5 !important`
-          }
-        } />
+        <AddATask setPanel={setPanel} />
       </div>
     </div>
   );
