@@ -38,7 +38,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
       <div className="task-selected">
         <div className="current-task">
           <form>
-            <div className="task-flex">
+            <div className="task-flex-grid">
                 <div>
                   <input 
                     type="text" 

@@ -12,7 +12,7 @@
   border-radius: 10px;
 }
 
-.task-flex {
+.task-flex-grid {
   margin: 4% 4%;
   display: grid;
   grid-template-columns: auto auto;

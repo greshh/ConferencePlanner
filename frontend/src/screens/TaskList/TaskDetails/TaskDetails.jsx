@@ -25,7 +25,7 @@ export const TaskDetails = ({ task, selectTask, setPanel, fetchTasks }) => {
     <div>
       <div className="task-selected">
         <div className="current-task">
-          <div className="task-flex">
+          <div className="task-flex-grid">
             <div>
               <h2>{selectedTask.task_name.toUpperCase()}</h2>
             </div>
