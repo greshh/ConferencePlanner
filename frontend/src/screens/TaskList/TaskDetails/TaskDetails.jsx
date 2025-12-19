@@ -52,7 +52,6 @@ export const TaskDetails = ({ task, selectTask, setPanel, fetchTasks }) => {
                 )}
                 {selectedTask.description && <p>{selectedTask.description}</p>}
               </div>
-              <span>
               <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                 <h3>COMMITTEES</h3>
                 <CommitteeDropdown
@@ -61,7 +60,6 @@ export const TaskDetails = ({ task, selectTask, setPanel, fetchTasks }) => {
                   setAssignment={setAssignment}
                 />
               </div>
-              </span>
               {assignment.committees && assignment.committees.map((c) => (
                 <span className="committee" key={c.task_committee_id}>
                   {c.committee.committee_name}

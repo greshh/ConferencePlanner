@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { loadAssigned } from "../../../hooks/loadAssigned";
 import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
+import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import "./style.css";
 
 export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
@@ -57,7 +58,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                     <p><span style={{ backgroundColor: '#FFADAD', color: '#7a2e2e', padding: '5px 10px', borderRadius: '5px' }}>Incomplete</span></p>
                   )}
                 </div>
-                <div>
+                <div style={{ marginBottom: '2rem' }}>
                   <p className="due-date"> Due Date: <input type="date" id="due-date" defaultValue={new Date(task.due_date).toISOString().split("T")[0]}></input></p>
                   <textarea
                     id="description"
@@ -65,6 +66,19 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                     maxLength="1000"
                     style={{ minWidth: "100%", height: "5rem", marginTop: '1rem', whiteSpace: "pre-wrap" }}
                   ></textarea>
+                  <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
+                    <h3>COMMITTEES</h3>
+                    <CommitteeDropdown
+                      task={task}
+                      assignment={assignment}
+                      setAssignment={setAssignment}
+                    />
+                  </div>
+                  {assignment.committees && assignment.committees.map((c) => (
+                    <span className="committee" key={c.task_committee_id}>
+                      {c.committee.committee_name}
+                    </span> 
+                  ))}
                 </div>
                 <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
                   <p style={{ lineHeight: '1px' }}>Assigned:</p>
@@ -85,13 +99,6 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                     )}
                     <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />
                   </div>
-
-                  <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
-                  {assignment.committees && assignment.committees.map((c) => (
-                    <p key={c.task_committee_id} style={{ fontStyle: 'italic', lineHeight: '0.5rem' }}>
-                      {c.committee.committee_name}
-                    </p> 
-                  ))}
                 </div>
                 <div style={{display: 'flex', gap: '1rem'}}>
                   <button type="submit" onClick={async (e) => 
