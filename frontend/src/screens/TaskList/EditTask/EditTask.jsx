@@ -47,6 +47,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                     maxLength="45" 
                     defaultValue={task.task_name} 
                     style={{ minWidth: '100%' }}
+                    required
                   ></input>
                 </div>
                 <div style={{ textAlign: 'right', marginRight: '1vw' }}>
@@ -96,6 +97,17 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                   <button type="submit" onClick={async (e) => 
                     { 
                       e.preventDefault(); 
+                      const errors = [];
+                      if (!document.getElementById("task-name").value) {
+                        errors.push("• Task name is required");
+                      }
+                      if (new Date(document.getElementById("due-date").value) == "Invalid Date") {
+                        errors.push("• Due date is invalid");
+                      }
+                      if (errors.length > 0) {
+                        alert("Please see the following errors:\n" + errors.join("\n"));
+                        return;
+                      }
                       await updateTask();
                       const refreshedTask = await fetch(`http://localhost:3000/task/${task.task_id}`).then(res => res.json());
                       setTask(refreshedTask);

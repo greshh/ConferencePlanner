@@ -1,6 +1,6 @@
-.task-selected {
+.new-task {
   display: flex;
-  background-color: #EEEEEE;
+  background-color: #9FCBE3;
   min-height: 90vh;
   justify-content: stretch;
 }
@@ -35,6 +35,10 @@
   outline: none;
   background: transparent;
   margin-bottom: 20px;
+}
+
+.task-name::placeholder {
+  color: #999999;
 }
 
 input {

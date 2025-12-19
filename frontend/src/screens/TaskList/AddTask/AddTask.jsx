@@ -26,7 +26,7 @@ export const AddTask = ({ setPanel, setTask, setTasks }) => {
 
   return (
     <div>
-      <div className="task-selected">
+      <div className="new-task">
         <div className="current-task">
           <form>
             <div className="task-flex">
@@ -36,7 +36,7 @@ export const AddTask = ({ setPanel, setTask, setTasks }) => {
                     className="task-name" 
                     id="task-name" 
                     maxLength="45" 
-                    placeholder="Enter task name..." 
+                    placeholder="NEW TASK" 
                     style={{ minWidth: '100%' }}
                     required
                   ></input>
@@ -54,8 +54,15 @@ export const AddTask = ({ setPanel, setTask, setTasks }) => {
                 <button type="submit" onClick={async (e) => 
                     { 
                       e.preventDefault(); 
+                      const errors = [];
                       if (!document.getElementById("task-name").value) {
-                        alert("Task name is required.");
+                        errors.push("• Task name is required");
+                      }
+                      if (new Date(document.getElementById("due-date").value) == "Invalid Date") {
+                        errors.push("• Due date is invalid");
+                      }
+                      if (errors.length > 0) {
+                        alert("Please see the following errors:\n" + errors.join("\n"));
                         return;
                       }
                       const newTask = await createTask();
