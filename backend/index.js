@@ -92,6 +92,7 @@ app.get("/assigned-committees/:task_id", async (req, res) => {
         select: {
           committee_id: true,
           committee_name: true,
+          colour: true,
         },
       },
     },

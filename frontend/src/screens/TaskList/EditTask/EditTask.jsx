@@ -75,7 +75,7 @@ export const EditTask = ({ task, setPanel, setTask, setTasks }) => {
                     />
                   </div>
                   {assignment.committees && assignment.committees.map((c) => (
-                    <span className="committee" key={c.task_committee_id}>
+                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
                       {c.committee.committee_name}
                     </span> 
                   ))}

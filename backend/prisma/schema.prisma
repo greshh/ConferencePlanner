@@ -8,11 +8,12 @@ datasource db {
 }
 
 model assignment {
-  assignment_id Int     @id @default(autoincrement())
-  task_id       Int?
-  member_id     Int?
-  member        member? @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignment_member")
-  task          task?   @relation(fields: [task_id], references: [task_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assignment_task")
+  assignment_id  Int     @id @default(autoincrement())
+  task_id        Int?
+  member_id      Int?
+  personal_notes String? @db.VarChar(100)
+  member         member? @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignment_member")
+  task           task?   @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignment_task")
 
   @@index([member_id], map: "fk_member_id_idx")
   @@index([task_id], map: "fk_task_id_idx")
@@ -21,24 +22,10 @@ model assignment {
 model committee {
   committee_id     Int                @id @default(autoincrement())
   committee_name   String             @db.VarChar(45)
-  committee_head   committee_head[]
+  colour           String?            @db.VarChar(6)
   committee_parent committee_parent[]
   membership       membership[]
   task_committee   task_committee[]
-}
-
-model committee_head {
-  committee_head_id Int        @id @default(autoincrement())
-  first_name        String     @db.VarChar(45)
-  last_name         String     @db.VarChar(45)
-  date_of_birth     DateTime   @db.Date
-  chapter           String?    @db.VarChar(45)
-  phone_number      String?    @db.VarChar(13)
-  email             String?    @db.VarChar(100)
-  committee_id      Int?
-  committee         committee? @relation(fields: [committee_id], references: [committee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_head_committee")
-
-  @@index([committee_id], map: "fk_head_committee_idx")
 }
 
 model committee_parent {
@@ -53,15 +40,16 @@ model committee_parent {
 }
 
 model member {
-  member_id     Int          @id @unique(map: "member_id_UNIQUE") @default(autoincrement())
-  first_name    String       @db.VarChar(45)
-  last_name     String       @db.VarChar(45)
-  date_of_birth DateTime     @db.Date
-  chapter       String       @db.VarChar(45)
-  phone_number  String?      @db.VarChar(13)
-  email         String?      @db.VarChar(100)
-  assignment    assignment[]
-  membership    membership[]
+  member_id         Int          @id @unique(map: "member_id_UNIQUE") @default(autoincrement())
+  first_name        String       @db.VarChar(45)
+  last_name         String       @db.VarChar(45)
+  date_of_birth     DateTime     @db.Date
+  chapter           String       @db.VarChar(45)
+  phone_number      String?      @db.VarChar(13)
+  email             String?      @db.VarChar(100)
+  is_committee_head Int          @db.TinyInt
+  assignment        assignment[]
+  membership        membership[]
 }
 
 model membership {
@@ -102,7 +90,7 @@ model task_committee {
   task_id           Int?
   committee_id      Int?
   committee         committee? @relation(fields: [committee_id], references: [committee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_taskcommittee_committee")
-  task              task?      @relation(fields: [task_id], references: [task_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_taskcommittee_task")
+  task              task?      @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_taskcommittee_task")
 
   @@index([committee_id], map: "fk_committee_id_idx")
   @@index([task_id], map: "fk_task_id_idx")
@@ -119,7 +107,7 @@ model workflow_task {
   workflow_id      Int?
   task_id          Int?
   order_index      Int
-  task             task?     @relation(fields: [task_id], references: [task_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_workflowtask_task")
+  task             task?     @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_workflowtask_task")
   workflow         workflow? @relation(fields: [workflow_id], references: [workflow_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_workflowtask_workflow")
 
   @@index([task_id], map: "fk_workflowtask_task_idx")

@@ -82,7 +82,7 @@ button:hover {
 
 .committee {
   font-style: italic;
-  background-color: #9FCBE3;
+  /* background-color: #9FCBE3; */
   padding: 4px 10px;
   border-radius: 10px; 
   margin-right: 0.5rem;
