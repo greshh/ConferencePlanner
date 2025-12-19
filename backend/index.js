@@ -148,7 +148,7 @@ app.delete("/delete-task/:id", async (req, res) => {
   }
 });
 
-app.patch("/update-assignment", async (req, res) => {
+app.patch("/update-member-assignment", async (req, res) => {
   const { task_id, member_id } = req.body;
   try {
     const assignment = await prisma.assignment.findFirst({
@@ -168,6 +168,36 @@ app.patch("/update-assignment", async (req, res) => {
         data: {
           task_id,  
           member_id,
+        },
+      });
+    }
+    res.json(assignment);
+  } catch (err) {
+    console.error("Failed to update assignment:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
+app.patch("/update-committee-assignment", async (req, res) => {
+  const { task_id, committee_id } = req.body;
+  try {
+    const assignment = await prisma.task_committee.findFirst({
+      where: {
+        task_id,
+        committee_id,
+      },
+    });
+    if (assignment != null) {
+      await prisma.task_committee.delete({
+        where: {
+          task_committee_id: assignment.task_committee_id,
+        },
+      });
+    } else {
+      await prisma.task_committee.create({
+        data: {
+          task_id,
+          committee_id,
         },
       });
     }

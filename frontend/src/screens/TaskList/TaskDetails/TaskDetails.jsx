@@ -3,6 +3,7 @@ import { loadAssigned } from "../../../hooks/loadAssigned";
 import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
 import "./style.css";
 import { PopUp } from "../../../components/PopUp/PopUp";
+import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 
 export const TaskDetails = ({ task, selectTask, setPanel, fetchTasks }) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
@@ -36,19 +37,36 @@ export const TaskDetails = ({ task, selectTask, setPanel, fetchTasks }) => {
                 <p><span style={{ backgroundColor: '#FFADAD', color: '#7a2e2e', padding: '5px 10px', borderRadius: '5px' }}>Incomplete</span></p>
               )}
             </div>
-            <div>
-              {selectedTask.due_date && (
-                <p className="due-date">Due Date: {(() => {
-                  const date = new Date(selectedTask.due_date);
-                  const formatted =
-                    String(date.getDate()).padStart(2, "0") + "/" +
-                    String(date.getMonth() + 1).padStart(2, "0") + "/" +
-                    date.getFullYear();
-                  return formatted;
-                })()}
-                </p>
-              )}
-              {selectedTask.description && <p>{selectedTask.description}</p>}
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                {selectedTask.due_date && (
+                  <p className="due-date">Due Date: {(() => {
+                    const date = new Date(selectedTask.due_date);
+                    const formatted =
+                      String(date.getDate()).padStart(2, "0") + "/" +
+                      String(date.getMonth() + 1).padStart(2, "0") + "/" +
+                      date.getFullYear();
+                    return formatted;
+                  })()}
+                  </p>
+                )}
+                {selectedTask.description && <p>{selectedTask.description}</p>}
+              </div>
+              <span>
+              <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
+                <h3>COMMITTEES</h3>
+                <CommitteeDropdown
+                  task={task}
+                  assignment={assignment}
+                  setAssignment={setAssignment}
+                />
+              </div>
+              </span>
+              {assignment.committees && assignment.committees.map((c) => (
+                <span className="committee" key={c.task_committee_id}>
+                  {c.committee.committee_name}
+                </span> 
+              ))}
             </div>
             <div style={{ textAlign: 'right' }}>
               <p style={{ marginBottom: '1px', marginTop: 0 }}>Assigned:</p>
@@ -69,12 +87,12 @@ export const TaskDetails = ({ task, selectTask, setPanel, fetchTasks }) => {
                 )}
                 <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />
               </div>
-              <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
+              {/* <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
               {assignment.committees && assignment.committees.map((c) => (
                 <p key={c.task_committee_id} style={{ fontStyle: 'italic', lineHeight: '0.5rem' }}>
                   {c.committee.committee_name}
                 </p> 
-              ))}
+              ))} */}
             </div>
             <div style={{display: 'flex', gap: '0.5rem'}}>
               <button onClick={() => setPanel(2)}>Edit</button>

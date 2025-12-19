@@ -54,7 +54,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
 
     setSaving(true);
     try {
-      const res = await fetch(`http://localhost:3000/update-assignment`, {
+      const res = await fetch(`http://localhost:3000/update-member-assignment`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: task.task_id, member_id: member.member_id }),
