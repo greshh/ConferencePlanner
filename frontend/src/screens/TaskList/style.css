@@ -35,7 +35,7 @@ html, body {
 
 .desktop .right-panel {
         margin-top: 10vh;
-        min-width: 70vw;
+        width: 100%;
         position: relative;
         color: #000000;
 }

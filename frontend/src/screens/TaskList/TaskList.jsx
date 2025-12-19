@@ -14,6 +14,7 @@ export const TaskList = () => {
   const [error, setError] = useState(null);
   const [selectedTask, selectTask] = useState(null);
   const [rightPanel, setPanel] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -31,6 +32,13 @@ export const TaskList = () => {
 
   useEffect(() => {
     fetchTasks();
+    window.addEventListener("scroll", () => {
+      if (window.pageYOffset > 0) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    });
   }, []);
 
   return (
@@ -38,7 +46,7 @@ export const TaskList = () => {
       <div className="header">
         <Header />
       </div>
-      <div className="task-heading">
+      <div className="task-heading" style={{ boxShadow: scrolled ? '0 4px 6px -2px #00000040;' : 'none' }}>
         <div className="my-tasks">MY TASKS</div>
       </div>
       <div className="content">
