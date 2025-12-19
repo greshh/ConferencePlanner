@@ -87,12 +87,6 @@ export const TaskDetails = ({ task, selectTask, setPanel, fetchTasks }) => {
                 )}
                 <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />
               </div>
-              {/* <p style={{ lineHeight: '0.5rem' }}>Committees:</p>
-              {assignment.committees && assignment.committees.map((c) => (
-                <p key={c.task_committee_id} style={{ fontStyle: 'italic', lineHeight: '0.5rem' }}>
-                  {c.committee.committee_name}
-                </p> 
-              ))} */}
             </div>
             <div style={{display: 'flex', gap: '0.5rem'}}>
               <button onClick={() => setPanel(2)}>Edit</button>
