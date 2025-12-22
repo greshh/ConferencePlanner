@@ -10,9 +10,10 @@ import "./style.css";
 
 export const TaskList = () => {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedTask, selectTask] = useState(null);
+  const [selectedTaskId, selectTaskId] = useState(null);
   const [rightPanel, setPanel] = useState(0);
   const [scrolled, setScrolled] = useState(false);
 
@@ -26,7 +27,32 @@ export const TaskList = () => {
       console.error("Failed to load tasks:", err);
       setError(err.message || "Failed to load tasks");
     } finally {
+      console.log("tasks:", tasks);
       setLoading(false);
+    }
+  };
+
+  const onToggleComplete = async (selectedTaskId) => {
+    const selectedTask = tasks.find(t => t.task_id === selectedTaskId);
+    if (saving) return;
+    const newValue = !selectedTask.completed;
+    console.log("newValue:", newValue);
+    setSaving(true);
+    try {
+      const res = await fetch(`http://localhost:3000/update-task/${selectedTaskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: newValue }),
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+    } catch (err) {
+      console.error("Failed to update task completed:", err);
+    } finally {
+      setSaving(false);
+      selectTaskId(selectedTaskId);
+      fetchTasks();
     }
   };
 
@@ -59,15 +85,14 @@ export const TaskList = () => {
               <div className="error">{error}</div>
             ) : (
               tasks.map((t) => {
-                const task_id = t.task_id;
-                const task_name = t.task_name;
                 return (
                   <div
-                    key={task_id}
+                    key={t.task_id}
                     onClick={() => {
-                      setPanel(0); // temporarily close panel
-                      selectTask({ ...t });
-                      setTimeout(() => setPanel(1), 0); // reopen panel
+                      // setPanel(0); // temporarily close panel
+                      selectTaskId(t.task_id);
+                      setPanel(1);
+                      // setTimeout(() => setPanel(1), 0); // reopen panel
                     }}
                     style={{
                       display: `flex`,
@@ -76,7 +101,7 @@ export const TaskList = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    <TaskBubble id={task_id} task={task_name} completed={t.completed} />
+                    <TaskBubble task={t} onToggleComplete={onToggleComplete} />
                   </div>
                 );
               })
@@ -88,9 +113,9 @@ export const TaskList = () => {
           {
             {
               0: <div/>,
-              1: <TaskDetails task={selectedTask} selectTask={selectTask} setPanel={setPanel} fetchTasks={fetchTasks} />,
-              2: <EditTask task={selectedTask} setPanel={setPanel} setTask={selectTask} setTasks={setTasks} />,
-              3: <AddTask setPanel={setPanel} setTask={selectTask} setTasks={setTasks} />
+              1: <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} fetchTasks={fetchTasks} loading={loading} setLoading={setLoading} />,
+              2: <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} setLoading={setLoading} />,
+              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />
             } [rightPanel]
           }
         </div>

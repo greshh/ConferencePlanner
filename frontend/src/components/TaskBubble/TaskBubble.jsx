@@ -1,54 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { loadTask } from "../../hooks/loadTask";
 import "./style.css";
 
-export const TaskBubble = ({ id, task = "Task", completed = false }) => {
-  const [checked, setChecked] = useState(Boolean(completed));
-  const [saving, setSaving] = useState(false);
+export const TaskBubble = ({ task, onToggleComplete }) => {
+  useEffect(() => {
 
-  const toggle = async () => {
-    if (saving) return;
-    const newValue = !checked;
+  }, [task]);
 
-    // optimistic UI update
-    setChecked(newValue);
-    setSaving(true);
-    try {
-      const res = await fetch(`http://localhost:3000/update-task/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: newValue }),
-      });
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-    } catch (err) {
-      console.error("Failed to update task completed:", err);
-      setChecked(!newValue);
-    } finally {
-      setSaving(false);
-    }
-  };
-  
   return (
-    <div className={`task-bubble`}>
-      <div className="checkbox">
-        <div
-          className={checked ? "check-checked" : "check-unchecked"}
-          onClick={toggle}
-          role="checkbox"
-          aria-checked={checked}
-          tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
-          style={{ cursor: saving ? 'wait' : 'pointer' }}
-        />
-      </div>
+    task != null && task.task_name != null && task.completed != null ? (
+      <div className={`task-bubble`}>
+        <div className="checkbox">
+          <div
+            className={task.completed ? "check-checked" : "check-unchecked"}
+            onClick={async () => await onToggleComplete(task.task_id)}
+            role="checkbox"
+            aria-checked={task.completed}
+            tabIndex={0}
+            onKeyDown={async (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); await onToggleComplete(task.task_id); } }}
+            style={{ cursor: 'pointer' }}
+          />
+        </div>
 
-      <div
-        className="text-wrapper"
-        style={{ textDecoration: checked ? "line-through" : "none" }}
-      >
-        {task}
+        <div
+          className="text-wrapper"
+          style={{ textDecoration: task.completed ? "line-through" : "none" }}
+        >
+          {task.task_name}
+        </div>
       </div>
-    </div>
+    ) : ( <div/> )
   );
 };

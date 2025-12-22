@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
 import "./style.css";
 
-export const AddTask = ({ setPanel, setTask, setTasks }) => {
+export const AddTask = ({ setPanel, selectTaskId, setTasks }) => {
 
   const createTask = async () => {
     const task_name = document.getElementById("task-name").value;
@@ -67,7 +67,7 @@ export const AddTask = ({ setPanel, setTask, setTasks }) => {
                       }
                       const newTask = await createTask();
                       const refreshedTask = await fetch(`http://localhost:3000/task/${newTask.task_id}`).then(res => res.json());
-                      setTask(refreshedTask);
+                      selectTaskId(refreshedTask.task_id);
                       const refreshedTasks = await fetch("http://localhost:3000/tasks").then(res => res.json());
                       setTasks(refreshedTasks);
                       setPanel(1); 
