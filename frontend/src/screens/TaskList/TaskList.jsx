@@ -16,6 +16,7 @@ export const TaskList = (memberId) => {
      Upon development, all the tasks can be seen and personal notes is disabled.*/
   const USER_LOGIN = false;
 
+  const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -62,6 +63,19 @@ export const TaskList = (memberId) => {
   const isLoading = tasks === null;
 
   useEffect(() => {
+    const getUser = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/member/${memberId.memberId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error("Failed to load member:", err);
+        setError(err.message || "Failed to load member");
+      }
+    }
+
+    USER_LOGIN && getUser();
     fetchTasks();
     window.addEventListener("scroll", () => {
       if (window.pageYOffset > 0) {
@@ -80,7 +94,13 @@ export const TaskList = (memberId) => {
       <div className="task-heading" style={{ boxShadow: scrolled ? '0 8px 12px -10px rgba(0, 0, 0, 0.3)' : 'none' }}>
         <div className="my-tasks">MY TASKS</div>
       </div>
-      <Sidebar/>
+      { !USER_LOGIN || (USER_LOGIN && user != null) ? (
+        <Sidebar user={user} USER_LOGIN={USER_LOGIN} />
+      ) : (
+        <div className="loading-sidebar">
+          <Loading/>
+        </div>
+      )}
       <div className="content">
         <div className="left-panel">
           <div style={{ margin: `20vh 0 10vh 0`, width: `20vw` }}>
