@@ -25,10 +25,11 @@ html, body {
 .content {
         display: flex;
         order: 2;
+        margin-left: 10vw;
+        min-height: 90vh;
 }
 
 .desktop .left-panel {
-        display: flex;
         background-color: #fcfcfc;
         position: relative;
 }

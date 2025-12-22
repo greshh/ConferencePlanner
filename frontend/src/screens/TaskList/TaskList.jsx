@@ -74,10 +74,10 @@ export const TaskList = () => {
       <div className="task-heading" style={{ boxShadow: scrolled ? '0 8px 12px -10px rgba(0, 0, 0, 0.3)' : 'none' }}>
         <div className="my-tasks">MY TASKS</div>
       </div>
+      <Sidebar/>
       <div className="content">
         <div className="left-panel">
-          <Sidebar style={{ order: `1` }} />
-          <div style={{ order: `2`, margin: `20vh 0 10vh 0`, width: `20vw` }}>
+          <div style={{ margin: `20vh 0 10vh 0`, width: `20vw` }}>
             {isLoading || error ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Loading/>
