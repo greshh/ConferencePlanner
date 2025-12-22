@@ -30,6 +30,15 @@ app.get("/committees", async (req, res) => {
   res.json(committees);
 });
 
+app.get("/member/:member_id", async (req, res) => {
+  const member = await prisma.member.findUnique({
+    where: {
+      member_id: parseInt(req.params.member_id),
+    },
+  });
+  res.json(member);
+});
+
 app.get("/assigned/:task_id", async (req, res) => {
   const assigned = await prisma.assignment.findMany({
     where: {

@@ -27,7 +27,6 @@ export const TaskList = () => {
       console.error("Failed to load tasks:", err);
       setError(err.message || "Failed to load tasks");
     } finally {
-      console.log("tasks:", tasks);
       setLoading(false);
     }
   };
