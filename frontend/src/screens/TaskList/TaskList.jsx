@@ -72,7 +72,7 @@ export const TaskList = () => {
       <div className="header">
         <Header />
       </div>
-      <div className="task-heading" style={{ boxShadow: scrolled ? '0 4px 6px -2px #00000040;' : 'none' }}>
+      <div className="task-heading" style={{ boxShadow: scrolled ? '0 8px 12px -10px rgba(0, 0, 0, 0.3)' : 'none' }}>
         <div className="my-tasks">MY TASKS</div>
       </div>
       <div className="content">
