@@ -47,7 +47,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
   if (assignment.error) return <p>Error: {assignment.error}</p>;
 
   return (
-    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null && (!USER_LOGIN || notes != null) ? (
+    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null && assignment.members != null && assignment.committees != null && (!USER_LOGIN || notes != null) ? (
       <div>
         <div className="task-selected">
           <div className="current-task">
