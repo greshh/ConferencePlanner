@@ -53,19 +53,35 @@ export const TaskDetails = ({ task, setPanel, fetchTasks }) => {
                   )}
                   {task.description && <p>{task.description}</p>}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
-                  <h3>COMMITTEES</h3>
-                  <CommitteeDropdown
-                    task={task}
-                    assignment={assignment}
-                    setAssignment={setAssignment}
-                  />
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
+                    <h3>COMMITTEES</h3>
+                    <CommitteeDropdown
+                      task={task}
+                      assignment={assignment}
+                      setAssignment={setAssignment}
+                    />
+                  </div>
+                  {assignment.committees && assignment.committees.map((c) => (
+                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
+                      {c.committee.committee_name}
+                    </span> 
+                  ))}
                 </div>
-                {assignment.committees && assignment.committees.map((c) => (
-                  <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
-                    {c.committee.committee_name}
-                  </span> 
-                ))}
+                <div style={{ marginBottom: '1.5rem'}}>
+                  <h3 style={{ marginBottom: '0' }}>NOTES</h3>
+                  <p style={{ fontStyle: 'italic', marginTop: '0', marginBottom: '0.5rem' }}>(For personal reference only)</p>
+                  <textarea
+                    // id="description"
+                    // defaultValue={task.description != null ? task.description : ""}
+                    maxLength="1000"
+                    style={{ minWidth: "100%", height: "3rem", whiteSpace: "pre-wrap" }}
+                  ></textarea>
+                </div>
+                <div style={{ marginBottom: '1.5rem'}}>
+                  <h3 style={{ marginBottom: '0' }}>COMMENTS</h3>
+                  <p style={{ fontStyle: 'italic', fontSize: 'smaller', marginTop: '0' }}>Coming soon...</p>
+                </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ marginBottom: '1px', marginTop: 0 }}>Assigned:</p>
