@@ -39,6 +39,20 @@ app.get("/member/:member_id", async (req, res) => {
   res.json(member);
 });
 
+app.get("/notes/:task_id/:member_id", async (req, res) => {
+  const assignment = await prisma.assignment.findMany({
+    where: {
+      member_id: parseInt(req.params.member_id),
+      task_id: parseInt(req.params.task_id),
+    },
+    select: {
+      assignment_id: true,
+      personal_notes: true,
+    }
+  });
+  res.json(assignment);
+});
+
 app.get("/assigned/:task_id", async (req, res) => {
   const assigned = await prisma.assignment.findMany({
     where: {
@@ -132,6 +146,29 @@ app.patch("/update-task/:id", async (req, res) => {
     res.json(updated);
   } catch (err) {
     console.error("Failed to update task:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
+app.patch("/update-notes/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { personal_notes } = req.body;
+
+  if (typeof id !== "number" || Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+
+  try {
+    const updated = await prisma.assignment.update({
+      where: { assignment_id: id },
+      data: {
+        ...(personal_notes !== undefined && { personal_notes }),
+      },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error("Failed to update notes:", err);
     res.status(500).json({ error: err.message || String(err) });
   }
 });

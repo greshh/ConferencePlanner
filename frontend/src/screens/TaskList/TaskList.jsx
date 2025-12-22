@@ -9,7 +9,13 @@ import { EditTask } from "./EditTask/EditTask";
 import { AddTask } from "./AddTask/AddTask";
 import "./style.css";
 
-export const TaskList = () => {
+export const TaskList = (memberId) => {
+
+  /* USER_LOGIN is set to FALSE for development purposes.
+     Upon deployment, the user should only see their own tasks and personal notes is used. 
+     Upon development, all the tasks can be seen and personal notes is disabled.*/
+  const USER_LOGIN = false;
+
   const [tasks, setTasks] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -88,10 +94,8 @@ export const TaskList = () => {
                   <div
                     key={t.task_id}
                     onClick={() => {
-                      // setPanel(0); // temporarily close panel
                       selectTaskId(t.task_id);
                       setPanel(1);
-                      // setTimeout(() => setPanel(1), 0); // reopen panel
                     }}
                     style={{
                       display: `flex`,
@@ -112,7 +116,7 @@ export const TaskList = () => {
           {
             {
               0: <div/>,
-              1: tasks && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} fetchTasks={fetchTasks} />,
+              1: tasks && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={memberId} USER_LOGIN={USER_LOGIN} />,
               2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />,
               3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />
             } [rightPanel]

@@ -6,22 +6,48 @@ import "./style.css";
 import { PopUp } from "../../../components/PopUp/PopUp";
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 
-export const TaskDetails = ({ task, setPanel, fetchTasks }) => {
+export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN }) => {
+  const [notes, setNotes] = useState([]);
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
   const [showPopup, setShowPopup] = useState(false);
+
+  const updateNotes = async () => {
+    const newNote = document.getElementById("notes").value;
+
+    try {
+      const res = await fetch(`http://localhost:3000/update-notes/${notes.assignment_id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ personal_notes: newNote }),
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+    } catch (err) {
+      console.error("Failed to update notes:", err);
+    }
+  };
 
   useEffect(() => {
     const fetchAssigned = async () => {
       const data = await loadAssigned(task.task_id);
       setAssignment(data);
     }
+    const fetchNotes = async () => {
+      const res = await fetch(`http://localhost:3000/notes/${task.task_id}/${memberId.memberId}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const notes = Array.isArray(data) ? data[0] : [];
+      setNotes(notes);
+    }
+    USER_LOGIN && fetchNotes();
     fetchAssigned();
   }, [task]);
 
   if (assignment.error) return <p>Error: {assignment.error}</p>;
 
   return (
-    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null ? (
+    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null && (!USER_LOGIN || notes != null) ? (
       <div>
         <div className="task-selected">
           <div className="current-task">
@@ -71,12 +97,21 @@ export const TaskDetails = ({ task, setPanel, fetchTasks }) => {
                 <div style={{ marginBottom: '1.5rem'}}>
                   <h3 style={{ marginBottom: '0' }}>NOTES</h3>
                   <p style={{ fontStyle: 'italic', marginTop: '0', marginBottom: '0.5rem' }}>(For personal reference only)</p>
-                  <textarea
-                    // id="description"
-                    // defaultValue={task.description != null ? task.description : ""}
-                    maxLength="1000"
-                    style={{ minWidth: "100%", height: "3rem", whiteSpace: "pre-wrap" }}
-                  ></textarea>
+                  {USER_LOGIN ? (
+                      <textarea
+                        id="notes"
+                        defaultValue={notes != null && notes.personal_notes != null ? notes.personal_notes : ""}
+                        maxLength="1000"
+                        style={{ minWidth: "100%", height: "3rem", whiteSpace: "pre-wrap" }}
+                        onChange={async () => await updateNotes()}
+                      ></textarea>
+                    ) :
+                      <textarea
+                        id="notes"
+                        disabled
+                        style={{ minWidth: "100%", height: "3rem" }}
+                      ></textarea>
+                  }
                 </div>
                 <div style={{ marginBottom: '1.5rem'}}>
                   <h3 style={{ marginBottom: '0' }}>COMMENTS</h3>
@@ -106,7 +141,7 @@ export const TaskDetails = ({ task, setPanel, fetchTasks }) => {
               <div style={{display: 'flex', gap: '0.5rem'}}>
                 <button onClick={() => setPanel(2)}>Edit</button>
                 <button onClick={() => setShowPopup(true)}>Delete</button>
-                <button onClick={() => {selectTask(null); setPanel(0);}}>Close</button>
+                <button onClick={() => {selectTaskId(null); setPanel(0);}}>Close</button>
               </div>
             </div>
           </div>
@@ -141,7 +176,7 @@ export const TaskDetails = ({ task, setPanel, fetchTasks }) => {
         )}
       </div>
     ) : (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '90vh' }}>
         <Loading />
       </div>
     )

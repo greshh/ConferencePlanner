@@ -3,6 +3,6 @@ import ReactDOM from 'react-dom/client'
 import { TaskList } from './screens/TaskList'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <TaskList />
+    <TaskList memberId='8' />
   </React.StrictMode>,
 )
