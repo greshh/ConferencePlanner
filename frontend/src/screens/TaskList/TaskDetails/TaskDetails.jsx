@@ -95,6 +95,10 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   ))}
                 </div>
                 <div style={{ marginBottom: '1.5rem'}}>
+                  <h3 style={{ marginBottom: '0' }}>ATTACHMENTS</h3>
+                  <p style={{ fontStyle: 'italic', fontSize: 'smaller', marginTop: '0' }}>Coming soon...</p>
+                </div>
+                <div style={{ marginBottom: '1.5rem'}}>
                   <h3 style={{ marginBottom: '0' }}>NOTES</h3>
                   <p style={{ fontStyle: 'italic', marginTop: '0', marginBottom: '0.5rem' }}>(For personal reference only)</p>
                   {USER_LOGIN ? (
