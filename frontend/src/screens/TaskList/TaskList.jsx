@@ -113,7 +113,7 @@ export const TaskList = () => {
             {
               0: <div/>,
               1: tasks && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} fetchTasks={fetchTasks} />,
-              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} />,
+              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />,
               3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />
             } [rightPanel]
           }
