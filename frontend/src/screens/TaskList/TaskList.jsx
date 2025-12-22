@@ -10,8 +10,7 @@ import { AddTask } from "./AddTask/AddTask";
 import "./style.css";
 
 export const TaskList = () => {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [selectedTaskId, selectTaskId] = useState(null);
@@ -27,8 +26,6 @@ export const TaskList = () => {
     } catch (err) {
       console.error("Failed to load tasks:", err);
       setError(err.message || "Failed to load tasks");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -56,6 +53,8 @@ export const TaskList = () => {
     }
   };
 
+  const isLoading = tasks === null;
+
   useEffect(() => {
     fetchTasks();
     window.addEventListener("scroll", () => {
@@ -79,7 +78,7 @@ export const TaskList = () => {
         <div className="left-panel">
           <Sidebar style={{ order: `1` }} />
           <div style={{ order: `2`, margin: `20vh 0 10vh 0`, width: `20vw` }}>
-            {loading || error ? (
+            {isLoading || error ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Loading/>
               </div>
@@ -113,8 +112,8 @@ export const TaskList = () => {
           {
             {
               0: <div/>,
-              1: <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} fetchTasks={fetchTasks} loading={loading} setLoading={setLoading} />,
-              2: <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} setLoading={setLoading} />,
+              1: tasks && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} fetchTasks={fetchTasks} />,
+              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} />,
               3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />
             } [rightPanel]
           }

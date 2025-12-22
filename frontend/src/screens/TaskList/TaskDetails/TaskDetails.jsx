@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { loadAssigned } from "../../../hooks/loadAssigned";
-import { loadTask } from "../../../hooks/loadTask";
+import { Loading } from "../../../components/Loading";
 import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
 import "./style.css";
 import { PopUp } from "../../../components/PopUp/PopUp";
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 
-export const TaskDetails = ({ task, setPanel, fetchTasks, loading, setLoading }) => {
+export const TaskDetails = ({ task, setPanel, fetchTasks }) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const fetchAssigned = async () => {
-      setLoading(true);
       const data = await loadAssigned(task.task_id);
       setAssignment(data);
-      setLoading(false);
     }
     fetchAssigned();
   }, [task]);
@@ -127,7 +125,9 @@ export const TaskDetails = ({ task, setPanel, fetchTasks, loading, setLoading })
         )}
       </div>
     ) : (
-      <div/>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Loading />
+      </div>
     )
   ); 
 }

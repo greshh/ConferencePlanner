@@ -5,15 +5,13 @@ import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdow
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import "./style.css";
 
-export const EditTask = ({ task, setPanel, selectTaskId, setTasks, setLoading }) => {
+export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
 
   useEffect(() => {
     const fetchAssigned = async () => {
-      setLoading(true);
       const data = await loadAssigned(task.task_id);
       setAssignment(data);
-      setLoading(false);
     }
     fetchAssigned();
   }, [task]);
