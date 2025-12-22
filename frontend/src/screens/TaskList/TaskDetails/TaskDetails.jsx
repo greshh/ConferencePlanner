@@ -79,7 +79,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   )}
                   {task.description && <p>{task.description}</p>}
                 </div>
-                <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ marginBottom: '2rem' }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                     <h3>COMMITTEES</h3>
                     <CommitteeDropdown
