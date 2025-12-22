@@ -3,6 +3,7 @@ import { AddATask } from "../../components/AddATask";
 import { Header } from "../../components/Header";
 import { Sidebar } from "../../components/Sidebar";
 import { TaskBubble } from "../../components/TaskBubble";
+import { Loading } from "../../components/Loading";
 import { TaskDetails } from "./TaskDetails/TaskDetails";
 import { EditTask } from "./EditTask/EditTask";
 import { AddTask } from "./AddTask/AddTask";
@@ -10,7 +11,7 @@ import "./style.css";
 
 export const TaskList = () => {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [selectedTaskId, selectTaskId] = useState(null);
@@ -78,10 +79,10 @@ export const TaskList = () => {
         <div className="left-panel">
           <Sidebar style={{ order: `1` }} />
           <div style={{ order: `2`, margin: `20vh 0 10vh 0`, width: `20vw` }}>
-            {loading ? (
-              <div className="loading">Loading tasks…</div>
-            ) : error ? (
-              <div className="error">{error}</div>
+            {loading || error ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Loading/>
+              </div>
             ) : (
               tasks.map((t) => {
                 return (
