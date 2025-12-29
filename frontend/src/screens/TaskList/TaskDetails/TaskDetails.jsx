@@ -5,11 +5,14 @@ import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdow
 import "./style.css";
 import { PopUp } from "../../../components/PopUp/PopUp";
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
+import { AttachmentDropdown } from "../../../components/AttachmentDropdown";
+import { parse } from "tldts";
 
 export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN }) => {
   const [notes, setNotes] = useState([]);
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
-  const [showPopup, setShowPopup] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showLinkPopup, setShowLinkPopup] = useState(false);
 
   const updateNotes = async () => {
     const newNote = document.getElementById("notes").value;
@@ -94,9 +97,27 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     </span> 
                   ))}
                 </div>
-                <div style={{ marginBottom: '1.5rem'}}>
-                  <h3 style={{ marginBottom: '0' }}>ATTACHMENTS</h3>
-                  <p style={{ fontStyle: 'italic', fontSize: 'smaller', marginTop: '0' }}>Coming soon...</p>
+                <div style={{ marginBottom: '2rem'}}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
+                    <h3 style={{ marginBottom: '0.5rem' }}>ATTACHMENTS</h3>
+                    <AttachmentDropdown setShowLinkPopup={setShowLinkPopup} /> 
+                  </div>
+                  <div className="attachments-section" >
+                    {task.attachments != null && task.attachments.length > 0 ? (
+                      task.attachments.map((a, index) => (
+                        <p key={index}>
+                          {a.type == "link" ? (
+                            <img src="./icons/attachments/Link.svg"></img>
+                          ) : (
+                            <img src="./icons/attachments/File.svg"></img>
+                          )}
+                          <a href={a.link}>{parse(a.link).domain}</a>
+                        </p>
+                      ))
+                    ) : (
+                      <p style={{ fontStyle: 'italic', fontSize: 'smaller' }}>Nothing has been attached!</p>
+                    )}
+                  </div>
                 </div>
                 <div style={{ marginBottom: '1.5rem'}}>
                   <h3 style={{ marginBottom: '0' }}>NOTES</h3>
@@ -144,13 +165,13 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
               </div>
               <div style={{display: 'flex', gap: '0.5rem'}}>
                 <button onClick={() => setPanel(2)}>Edit</button>
-                <button onClick={() => setShowPopup(true)}>Delete</button>
+                <button onClick={() => setShowDeletePopup(true)}>Delete</button>
                 <button onClick={() => {selectTaskId(null); setPanel(0);}}>Close</button>
               </div>
             </div>
           </div>
         </div>
-        {showPopup && (
+        {showDeletePopup && (
           <div className="popup-backdrop">
             <PopUp 
               message="Are you sure you want to delete this task?" 
@@ -163,7 +184,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     });
                     if (!res.ok) {
                       console.error(`Failed to delete task: HTTP ${res.status}`);
-                      setShowPopup(false);
+                      setShowDeletePopup(false);
                       return;
                     }
                     fetchTasks();
@@ -172,7 +193,64 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 },
                 {
                   label: "Cancel",
-                  onClick: () => { setShowPopup(false); }
+                  onClick: () => { setShowDeletePopup(false); }
+                }
+              ]}
+            />
+          </div>
+        )}
+        {showLinkPopup && (
+          <div className="popup-backdrop">
+            <PopUp 
+              message="Enter link below:" 
+              inputText="True"
+              options={[
+                {
+                  label: "Add",
+                  onClick: async () => 
+                    {
+                      const inputLink = document.getElementById("link").value;
+                      
+                      try {
+                        console.log("start");
+                        const link = await fetch("http://localhost:3000/get-url", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ url: inputLink })
+                        });
+                        const data = await link.json();
+                        console.log(data.resolvedUrl);
+  
+                        const newLink = {
+                          type: "link",
+                          link: data.resolvedUrl
+                        };
+
+                        if (!task.attachments) {
+                          task.attachments = [];
+                        }
+  
+                        console.log(task.attachments);
+                        task.attachments.push(newLink);
+                        console.log(task.attachments);
+  
+                        const response = await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ attachments: task.attachments })
+                        });
+                        console.log("finish");
+                      } catch (err) {
+                        return err.message;
+                      }
+
+
+                      setShowLinkPopup(false); 
+                    }
+                }, 
+                {
+                  label: "Cancel",
+                  onClick: () => { setShowLinkPopup(false); }
                 }
               ]}
             />

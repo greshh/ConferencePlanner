@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 model assignment {
@@ -80,6 +80,7 @@ model task {
   due_date       DateTime?        @db.Date
   description    String?          @db.VarChar(1000)
   completed      Boolean
+  attachments    Json?
   assignment     assignment[]
   task_committee task_committee[]
   workflow_task  workflow_task[]

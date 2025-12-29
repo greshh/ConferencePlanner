@@ -1,9 +1,6 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import { prisma } from "./db.js";
-
-dotenv.config();
+import { prisma } from "./lib/prisma.js";
 
 const app = express();
 
@@ -125,7 +122,7 @@ app.get("/assigned-committees/:task_id", async (req, res) => {
 
 app.patch("/update-task/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { completed, task_name, due_date, description, assigned_members } = req.body;
+  const { completed, task_name, due_date, description, assigned_members, attachments } = req.body;
 
   if (typeof id !== "number" || Number.isNaN(id)) {
     return res.status(400).json({ error: "Invalid ID" });
@@ -140,6 +137,7 @@ app.patch("/update-task/:id", async (req, res) => {
         ...(due_date !== undefined && { due_date: new Date(due_date) }),
         ...(description !== undefined && { description }),
         ...(assigned_members !== undefined && { assigned_members }),
+        ...(attachments !== undefined && { attachments }),
       },
     });
 
@@ -271,6 +269,24 @@ app.post("/create-task", async (req, res) => {
     console.error("Failed to create task:", err);
     res.status(500).json({ error: err.message || String(err) });
   } 
+});
+
+app.post("/get-url", async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ error: "URL is required" });
+    const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+    const response = await fetch(fullUrl, {
+      method: "HEAD",
+      redirect: "follow",
+    });
+    if (!response.url) return res.status(500).json({ error: "Incorrect URL" });
+    const resolvedUrl = response.url;
+    res.json({ resolvedUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Unable to resolve URL" });
+  }
 });
 
 

@@ -59,8 +59,8 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
       <img onClick={async () => {
         toggleMemberList(committeeListOpen); 
         setCommittees(await fetchCommittees()); 
-      }} src={'/icons/edit-task/SmallAddButton.svg'} className="small-add-button"></img>
-      <div className="committee-content" style={{ display: committeeListOpen ? "block" : "none" }}>
+      }} src={'/icons/edit-task/SmallAddButton.svg'} className="small-add-button" style={{ zIndex: 1 }}></img>
+      <div className="committee-content" style={{ display: committeeListOpen ? "block" : "none", zIndex: 501 }}>
         {/* Add all committees */}
         {committees.map((committee) => 
           <div className="committee-selection" key={committee.committee_id}>

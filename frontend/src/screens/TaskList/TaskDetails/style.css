@@ -87,3 +87,20 @@ button:hover {
   border-radius: 10px; 
   margin-right: 0.5rem;
 }
+
+.attachments-section p {
+  margin: 0;
+  color: #1A7EEA;
+}
+
+.attachments-section img {
+  height: 1rem;
+}
+
+.attachments-section a {
+  padding-left: 0.5rem;
+}
+
+.attachments-section a:visited {
+  color: #1A7EEA;
+}

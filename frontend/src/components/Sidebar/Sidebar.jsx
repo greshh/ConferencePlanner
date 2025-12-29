@@ -2,10 +2,6 @@ import React, { useEffect } from "react";
 import "./style.css";
 
 export const Sidebar = (user, USER_LOGIN) => {
-  useEffect(()=> {
-    console.log(user.user, user.USER_LOGIN);
-  },[])
-
   return (
     <div className='sidebar'>
       <div className='link'>

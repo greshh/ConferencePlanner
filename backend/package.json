@@ -8,6 +8,13 @@
                 "prisma:pull": "prisma db pull"
         },
         "dependencies": {
-                "bcrypt": "^6.0.0"
+                "@prisma/adapter-mariadb": "^7.2.0",
+                "@prisma/client": "^7.2.0",
+                "bcrypt": "^6.0.0",
+                "dotenv": "^17.2.3"
+        },
+        "devDependencies": {
+                "@types/node": "^25.0.3",
+                "prisma": "^7.2.0"
         }
 }
