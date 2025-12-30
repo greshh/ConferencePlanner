@@ -11,8 +11,7 @@ import { parse } from "tldts";
 export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN }) => {
   const [notes, setNotes] = useState([]);
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [showLinkPopup, setShowLinkPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete, 2 = Link, 3 = File
 
   const updateNotes = async () => {
     const newNote = document.getElementById("notes").value;
@@ -100,7 +99,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 <div style={{ marginBottom: '2rem'}}>
                   <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                     <h3 style={{ marginBottom: '0.5rem' }}>ATTACHMENTS</h3>
-                    <AttachmentDropdown setShowLinkPopup={setShowLinkPopup} /> 
+                    <AttachmentDropdown setShowPopup={setShowPopup} /> 
                   </div>
                   <div className="attachments-section" >
                     {task.attachments != null && task.attachments.length > 0 ? (
@@ -111,7 +110,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                           ) : (
                             <img src="./icons/attachments/File.svg"/>
                           )}
-                          <a href={a.link}>{parse(a.link).domain}</a>
+                          <a href={a.link} target="_blank" rel="noopener noreferrer">{parse(a.link).domain}</a>
                         </p>
                       ))
                     ) : (
@@ -165,13 +164,13 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
               </div>
               <div style={{display: 'flex', gap: '0.5rem'}}>
                 <button onClick={() => setPanel(2)}>Edit</button>
-                <button onClick={() => setShowDeletePopup(true)}>Delete</button>
+                <button onClick={() => setShowPopup(1)}>Delete</button>
                 <button onClick={() => {selectTaskId(null); setPanel(0);}}>Close</button>
               </div>
             </div>
           </div>
         </div>
-        {showDeletePopup && (
+        {showPopup == 1 && (
           <div className="popup-backdrop">
             <PopUp 
               message="Are you sure you want to delete this task?" 
@@ -184,7 +183,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     });
                     if (!res.ok) {
                       console.error(`Failed to delete task: HTTP ${res.status}`);
-                      setShowDeletePopup(false);
+                      setShowPopup(0);
                       return;
                     }
                     fetchTasks();
@@ -193,13 +192,13 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 },
                 {
                   label: "Cancel",
-                  onClick: () => { setShowDeletePopup(false); }
+                  onClick: () => { setShowPopup(0); }
                 }
               ]}
             />
           </div>
         )}
-        {showLinkPopup && (
+        {showPopup == 2 && (
           <div className="popup-backdrop">
             <PopUp 
               message="Enter link below:" 
@@ -212,14 +211,12 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       const inputLink = document.getElementById("link").value;
                       
                       try {
-                        console.log("start");
                         const link = await fetch("http://localhost:3000/get-url", {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ url: inputLink })
                         });
                         const data = await link.json();
-                        console.log(data.resolvedUrl);
   
                         const newLink = {
                           type: "link",
@@ -229,28 +226,83 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                         if (!task.attachments) {
                           task.attachments = [];
                         }
-  
-                        console.log(task.attachments);
+
                         task.attachments.push(newLink);
-                        console.log(task.attachments);
   
-                        const response = await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+                        await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
                         });
-                        console.log("finish");
                       } catch (err) {
                         return err.message;
                       }
 
 
-                      setShowLinkPopup(false); 
+                      setShowPopup(0); 
                     }
                 }, 
                 {
                   label: "Cancel",
-                  onClick: () => { setShowLinkPopup(false); }
+                  onClick: () => { setShowPopup(0); }
+                }
+              ]}
+            />
+          </div>
+        )}
+        {showPopup == 3 && (
+          <div className="popup-backdrop">
+            <PopUp 
+              message="Upload Attachment:" 
+              inputFile="True"
+              options={[
+                {
+                  label: "Add",
+                  onClick: async () => {
+                      const input = document.getElementById("file");
+                      const inputFile = input.files[0];
+                      if (!inputFile) return;
+
+                      const data = new FormData();
+                      data.append("task_id", task.task_id);
+                      data.append("file_name", inputFile.name);
+                      data.append("file", inputFile);
+
+                      try {
+                        await fetch(`http://localhost:3000/upload-file`, {
+                          method: "PATCH",
+                          body: data
+                        });
+
+                        const newFile = {
+                          type: "file",
+                          link: `https://storage.googleapis.com/conference_planner_attachments/${task.task_id}/${inputFile.name}`
+                        };
+
+                        if (!task.attachments) {
+                          task.attachments = [];
+                        }
+
+                        console.log(task.attachments);
+                        task.attachments.push(newFile);
+                        console.log(task.attachments);
+
+                        await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ attachments: task.attachments })
+                        });
+                      } catch (err) {
+                        return err.message;
+                      }
+
+
+                    setShowPopup(0); 
+                  }
+                }, 
+                {
+                  label: "Cancel",
+                  onClick: () => { setShowPopup(0); }
                 }
               ]}
             />

@@ -1,12 +1,58 @@
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import { prisma } from "./lib/prisma.js";
+import { Storage } from "@google-cloud/storage";
 
 const app = express();
+const storage = new Storage();
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 20 * 1024 * 1024, // 20 mb
+  },
+});
 
 app.use(cors());
 app.use(express.json());
 app.use("/profile-pics", express.static("profile-pics"));
+
+app.patch("/upload-file", upload.single("file"), async (req, res) => {
+  const bucket = storage.bucket("conference_planner_attachments")
+  const { task_id, file_name } = req.body;
+  const file = req.file;
+
+  try {
+    const uploadFile = await bucket.file(`${task_id}/${file_name}`);
+
+    const stream = uploadFile.createWriteStream({
+      resumable: false,
+      contentType: file.mimetype
+    });
+  
+    stream.on("error", (err) => {
+      res.status(500).json({ error: "upload failed" });
+    });
+
+    stream.on("finish", () => {
+      /*
+      definition: public url
+      this is what you store in your database
+      */
+      const publicUrl = `https://storage.googleapis.com/${task_id}/${file_name}`;
+
+      res.json({
+        file_name: file.originalname,
+        file_url: publicUrl,
+      });
+    });
+
+    stream.end(file.buffer);
+  } catch (err) {
+    console.log(err);
+  }
+})
 
 app.get("/tasks", async (req, res) => {
   const tasks = await prisma.task.findMany();

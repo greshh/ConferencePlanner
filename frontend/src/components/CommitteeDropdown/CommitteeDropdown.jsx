@@ -32,7 +32,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
   const toggleCommitteeChecked = async (committee) => {
     if (saving) return;
     const checked = checkCommitteeChecked(committee.committee_id);
-    const newValue = !checked; // To be used for checkbox UI update
+    let newValue = !checked; // To be used for checkbox UI update
 
     setSaving(true);
     try {

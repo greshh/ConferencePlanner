@@ -50,7 +50,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
   const toggleMemberChecked = async (member) => {
     if (saving) return;
     const checked = checkMemberChecked(member.member_id);
-    const newValue = !checked; // To be used for checkbox UI update
+    let newValue = !checked; // To be used for checkbox UI update
 
     setSaving(true);
     try {
