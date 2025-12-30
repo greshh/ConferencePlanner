@@ -107,15 +107,15 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       task.attachments.map((a, index) => (
                         <p key={index}>
                           {a.type == "link" ? (
-                            <img src="./icons/attachments/Link.svg"></img>
+                            <img src="./icons/attachments/Link.svg"/>
                           ) : (
-                            <img src="./icons/attachments/File.svg"></img>
+                            <img src="./icons/attachments/File.svg"/>
                           )}
                           <a href={a.link}>{parse(a.link).domain}</a>
                         </p>
                       ))
                     ) : (
-                      <p style={{ fontStyle: 'italic', fontSize: 'smaller' }}>Nothing has been attached!</p>
+                      <p style={{ color: 'black', fontStyle: 'italic', fontSize: 'smaller' }}>Nothing has been attached!</p>
                     )}
                   </div>
                 </div>
