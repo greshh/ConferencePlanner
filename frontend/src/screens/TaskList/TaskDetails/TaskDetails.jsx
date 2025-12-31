@@ -209,6 +209,10 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: async () => 
                     {
                       const inputLink = document.getElementById("link").value;
+                      if (!inputLink) {
+                        alert("Please enter a URL");
+                        return;
+                      }
                       
                       try {
                         const link = await fetch("http://localhost:3000/get-url", {
@@ -217,6 +221,11 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                           body: JSON.stringify({ url: inputLink })
                         });
                         const data = await link.json();
+
+                        if (data.error) {
+                          alert("Invalid URL - Please try another URL");
+                          return;
+                        }
   
                         const newLink = {
                           type: "link",
@@ -237,7 +246,6 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       } catch (err) {
                         return err.message;
                       }
-
 
                       setShowPopup(0); 
                     }
@@ -261,7 +269,10 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: async () => {
                       const input = document.getElementById("file");
                       const inputFile = input.files[0];
-                      if (!inputFile) return;
+                      if (!inputFile) {
+                        alert("Please attach a file");
+                        return;
+                      }
 
                       const data = new FormData();
                       data.append("task_id", task.task_id);

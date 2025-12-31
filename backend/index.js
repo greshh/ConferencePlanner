@@ -320,7 +320,6 @@ app.post("/create-task", async (req, res) => {
 app.post("/get-url", async (req, res) => {
   try {
     const { url } = req.body;
-    if (!url) return res.status(400).json({ error: "URL is required" });
     const fullUrl = url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
     const response = await fetch(fullUrl, {
       method: "HEAD",
@@ -328,9 +327,10 @@ app.post("/get-url", async (req, res) => {
     });
     if (!response.url) return res.status(500).json({ error: "Incorrect URL" });
     const resolvedUrl = response.url;
-    res.json({ resolvedUrl });
+    res.json({ resolvedUrl: resolvedUrl });
   } catch (err) {
     console.error(err);
+    if (err instanceof TypeError) return res.status(400).json({ error: "Invalid or unreachable URL" });
     res.status(500).json({ error: "Unable to resolve URL" });
   }
 });
