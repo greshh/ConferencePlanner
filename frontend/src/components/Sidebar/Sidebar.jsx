@@ -10,7 +10,7 @@ export const Sidebar = (user, USER_LOGIN) => {
       {user.USER_LOGIN && user.user != null ? (
         <div className="user">
           <img
-            src={`https://storage.googleapis.com/conference_planner_pfp/member/${user.user.member_id}.jpg`}
+            src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${user.user.member_id}.jpg`}
             className="user-avatar"
             alt={user.user.first_name}
             title={`${user.user.first_name} ${user.user.last_name}`}

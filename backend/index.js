@@ -27,7 +27,7 @@ app.use(express.json());
 app.use("/profile-pics", express.static("profile-pics"));
 
 app.patch("/upload-file", upload.single("file"), async (req, res) => {
-  const bucket = storage.bucket("conference_planner_attachments")
+  const bucket = storage.bucket("conference-planner")
   const { task_id, file_name } = req.body;
   const file = req.file;
 
@@ -41,7 +41,7 @@ app.patch("/upload-file", upload.single("file"), async (req, res) => {
     const safe_name = base_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + extension;
 
 
-    const uploadFile = await bucket.file(`${task_id}/${safe_name}`);
+    const uploadFile = await bucket.file(`attachments/${task_id}/${safe_name}`);
 
     const stream = uploadFile.createWriteStream({
       resumable: false,
@@ -53,7 +53,7 @@ app.patch("/upload-file", upload.single("file"), async (req, res) => {
     });
 
     stream.on("finish", () => {
-      const publicUrl = `https://storage.googleapis.com/${task_id}/${safe_name}`;
+      const publicUrl = `https://storage.googleapis.com/attachments/${task_id}/${safe_name}`;
       res.json({
         file_name: file.originalname,
         file_url: publicUrl,

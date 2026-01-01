@@ -149,7 +149,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     assignment.members.map(m => (
                       <img
                         key={m.assignment_id}
-                        src={`https://storage.googleapis.com/conference_planner_pfp/member/${m.member.member_id}.jpg`}
+                        src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member.member_id}.jpg`}
                         className="avatar"
                         alt={m.member.first_name}
                         title={`${m.member.first_name} ${m.member.last_name}`}
