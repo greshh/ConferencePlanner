@@ -9,6 +9,7 @@ import { AttachmentDropdown } from "../../../components/AttachmentDropdown";
 import { parse } from "tldts";
 
 export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN }) => {
+  const [user, setUser] = useState(null);
   const [notes, setNotes] = useState([]);
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
   const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete, 2 = Link, 3 = File
@@ -35,6 +36,17 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
       const data = await loadAssigned(task.task_id);
       setAssignment(data);
     }
+    const getUser = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/member/${memberId.memberId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error("Failed to load member:", err);
+        setError(err.message || "Failed to load member");
+      }
+    }
     const fetchNotes = async () => {
       const res = await fetch(`http://localhost:3000/notes/${task.task_id}/${memberId.memberId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -42,6 +54,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
       const notes = Array.isArray(data) ? data[0] : [];
       setNotes(notes);
     }
+    USER_LOGIN && getUser();
     USER_LOGIN && fetchNotes();
     fetchAssigned();
   }, [task]);
@@ -49,7 +62,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
   if (assignment.error) return <p>Error: {assignment.error}</p>;
 
   return (
-    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null && assignment.members != null && assignment.committees != null && (!USER_LOGIN || notes != null) ? (
+    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null && assignment.members != null && assignment.committees != null && (!USER_LOGIN || (user != null && notes != null)) ? (
       <div>
         <div className="task-selected">
           <div className="current-task">
@@ -84,11 +97,13 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 <div style={{ marginBottom: '2rem' }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                     <h3>COMMITTEES</h3>
-                    <CommitteeDropdown
-                      task={task}
-                      assignment={assignment}
-                      setAssignment={setAssignment}
-                    />
+                    {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && 
+                      <CommitteeDropdown
+                        task={task}
+                        assignment={assignment}
+                        setAssignment={setAssignment}
+                      />
+                    }
                   </div>
                   {assignment.committees && assignment.committees.map((c) => (
                     <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
@@ -99,7 +114,9 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 <div style={{ marginBottom: '2rem'}}>
                   <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                     <h3 style={{ marginBottom: '0.5rem' }}>ATTACHMENTS</h3>
-                    <AttachmentDropdown setShowPopup={setShowPopup} /> 
+                    {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && 
+                      <AttachmentDropdown setShowPopup={setShowPopup} />
+                    } 
                   </div>
                   <div className="attachments-section" >
                     {task.attachments != null && task.attachments.length > 0 ? (
@@ -159,14 +176,20 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   )) : (
                     <div/>
                   )}
-                  <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />
+                  {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />}
                 </div>
               </div>
-              <div style={{display: 'flex', gap: '0.5rem'}}>
-                <button onClick={() => setPanel(2)}>Edit</button>
-                <button onClick={() => setShowPopup(1)}>Delete</button>
-                <button onClick={() => {selectTaskId(null); setPanel(0);}}>Close</button>
-              </div>
+              {(USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN ? (
+                <div style={{display: 'flex', gap: '0.5rem'}}>
+                  <button onClick={() => setPanel(2)}>Edit</button>
+                  <button onClick={() => setShowPopup(1)}>Delete</button>
+                  <button onClick={() => {selectTaskId(null); setPanel(0);}}>Close</button>
+                </div>
+              ) : (
+                <div style={{display: 'flex', gap: '0.5rem'}}>
+                  <button onClick={() => {selectTaskId(null); setPanel(0);}}>Close</button>
+                </div>
+              )}
             </div>
           </div>
         </div>
