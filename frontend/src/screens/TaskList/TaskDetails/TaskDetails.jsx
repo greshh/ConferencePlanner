@@ -110,7 +110,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                           ) : (
                             <img src="./icons/attachments/File.svg"/>
                           )}
-                          <a href={a.link} target="_blank" rel="noopener noreferrer">{parse(a.link).domain}</a>
+                          <a href={a.link} target="_blank" rel="noopener noreferrer">{a.name ? a.name : parse(a.link).domain}</a>
                         </p>
                       ))
                     ) : (
@@ -201,14 +201,15 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
         {showPopup == 2 && (
           <div className="popup-backdrop">
             <PopUp 
-              message="Enter link below:" 
-              inputText="True"
+              message="Link" 
               options={[
                 {
                   label: "Add",
                   onClick: async () => 
                     {
                       const inputLink = document.getElementById("link").value;
+                      const linkName = document.getElementById("attachment-name").value;
+
                       if (!inputLink) {
                         alert("Please enter a URL");
                         return;
@@ -229,7 +230,8 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
   
                         const newLink = {
                           type: "link",
-                          link: data.resolvedUrl
+                          link: data.resolvedUrl,
+                          name: linkName
                         };
 
                         if (!task.attachments) {
@@ -260,14 +262,15 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
         )}
         {showPopup == 3 && (
           <div className="popup-backdrop">
-            <PopUp 
-              message="Upload Attachment:" 
+            <PopUp  
               inputFile="True"
               options={[
                 {
                   label: "Add",
                   onClick: async () => {
                       const input = document.getElementById("file");
+                      const fileName = document.getElementById("attachment-name").value;
+
                       const inputFile = input.files[0];
                       if (!inputFile) {
                         alert("Please attach a file");
@@ -276,7 +279,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
                       const data = new FormData();
                       data.append("task_id", task.task_id);
-                      data.append("file_name", inputFile.name);
+                      data.append("file_name", fileName);
                       data.append("file", inputFile);
 
                       try {
@@ -287,7 +290,8 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
                         const newFile = {
                           type: "file",
-                          link: `https://storage.googleapis.com/conference_planner_attachments/${task.task_id}/${inputFile.name}`
+                          link: `https://storage.googleapis.com/conference_planner_attachments/${task.task_id}/${fileName}`,
+                          name: fileName
                         };
 
                         if (!task.attachments) {
@@ -306,7 +310,6 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       } catch (err) {
                         return err.message;
                       }
-
 
                     setShowPopup(0); 
                   }

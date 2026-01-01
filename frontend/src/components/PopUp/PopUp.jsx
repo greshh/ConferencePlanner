@@ -5,13 +5,28 @@ export const PopUp = ({ message, options, inputText, inputFile }) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
-        <p style={{ marginBottom: '0.5rem' }}>{message}</p>
+        {message && message != "Link" && 
+          <p style={{ marginBottom: '0.5rem' }}>{message}</p>
+        }
         <form>
+          {message == "Link" && 
+            <div className="attachment-input">
+              <p>Link</p>
+              <input type="text" id="link" />
+              <p>Name</p>
+              <input type="text" id="attachment-name" />
+            </div>
+          }
           {inputText ? (
             <input type="text" id="link" style={{ marginBottom: '1rem' }} />
           ) : ( <div/> )}
           {inputFile ? (
-            <input type="file" id="file" style={{ margin: '0.5rem 0 1rem 0' }} />
+            <div className="attachment-input">
+              <p>File</p> 
+              <input type="file" id="file" />
+              <p>Name</p> 
+              <input type="text" id="attachment-name" />
+            </div>
           ) : ( <div/> )}
         </form>
         <div className="popup-buttons" style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>

@@ -23,3 +23,26 @@
   min-width: 50px;
   max-width: 90%;
 }
+
+.attachment-input p {
+  font-weight: bold;
+  font-size: smaller;
+  margin: 0.25rem 0;
+}
+
+.attachment-input input {
+  margin-bottom: 1rem;
+}
+
+.attachment-input input[type="text"] {
+  min-width: -webkit-fill-available;
+}
+
+.attachment-input input[type="file"] {
+  max-width: 12rem;
+}
+
+.attachment-input input:focus {
+  border-color: #5babd9;
+  outline: none;
+}

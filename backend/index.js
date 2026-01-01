@@ -3,6 +3,14 @@ import cors from "cors";
 import multer from "multer";
 import { prisma } from "./lib/prisma.js";
 import { Storage } from "@google-cloud/storage";
+import fs from "fs";
+
+const mimeAllowList = JSON.parse(
+  fs.readFileSync(
+    new URL("./config/mime-allowlist.json", import.meta.url),
+    "utf-8"
+  )
+);
 
 const app = express();
 const storage = new Storage();
@@ -24,7 +32,16 @@ app.patch("/upload-file", upload.single("file"), async (req, res) => {
   const file = req.file;
 
   try {
-    const uploadFile = await bucket.file(`${task_id}/${file_name}`);
+    if (!mimeAllowList[file.mimetype]) {
+      throw new Error("Unsupported file type");
+    }
+
+    const extension = mimeAllowList[file.mimetype];
+    const base_name = file_name.replace(/\.[^/.]+$/, "");
+    const safe_name = base_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + extension;
+
+
+    const uploadFile = await bucket.file(`${task_id}/${safe_name}`);
 
     const stream = uploadFile.createWriteStream({
       resumable: false,
@@ -36,12 +53,7 @@ app.patch("/upload-file", upload.single("file"), async (req, res) => {
     });
 
     stream.on("finish", () => {
-      /*
-      definition: public url
-      this is what you store in your database
-      */
-      const publicUrl = `https://storage.googleapis.com/${task_id}/${file_name}`;
-
+      const publicUrl = `https://storage.googleapis.com/${task_id}/${safe_name}`;
       res.json({
         file_name: file.originalname,
         file_url: publicUrl,

@@ -49,6 +49,7 @@
 .user p {
         font-weight: bold;
         margin: 0;
+        line-clamp: 1;
         text-overflow: ellipsis;
 }
 

@@ -14,7 +14,7 @@ export const TaskList = (memberId) => {
   /* USER_LOGIN is set to FALSE for development purposes.
      Upon deployment, the user should only see their own tasks and personal notes is used. 
      Upon development, all the tasks can be seen and personal notes is disabled.*/
-  const USER_LOGIN = false;
+  const USER_LOGIN = true;
 
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState(null);
