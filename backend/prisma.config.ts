@@ -11,4 +11,5 @@ export default defineConfig({
   datasource: {
     url: process.env["DATABASE_URL"],
   },
+  base: process.env.VITE_BASE_PATH || "/ConferencePlanner",
 });
