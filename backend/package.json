@@ -8,6 +8,7 @@
                 "prisma:pull": "prisma db pull"
         },
         "dependencies": {
+                "@google-cloud/storage": "^7.18.0",
                 "@prisma/adapter-mariadb": "^7.2.0",
                 "@prisma/client": "^7.2.0",
                 "bcrypt": "^6.0.0",
