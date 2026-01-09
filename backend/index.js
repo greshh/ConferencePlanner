@@ -4,6 +4,8 @@ import multer from "multer";
 import { prisma } from "./lib/prisma.js";
 import { Storage } from "@google-cloud/storage";
 import fs from "fs";
+import { fileURLToPath } from "url";
+import path from "path";
 
 const mimeAllowList = JSON.parse(
   fs.readFileSync(
@@ -11,6 +13,9 @@ const mimeAllowList = JSON.parse(
     "utf-8"
   )
 );
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const storage = new Storage();
@@ -25,6 +30,11 @@ const upload = multer({
 app.use(cors());
 app.use(express.json());
 app.use("/profile-pics", express.static("profile-pics"));
+app.use(express.static(path.join(__dirname, "/dist")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/dist/index.html"));
+});
 
 app.patch("/upload-file", upload.single("file"), async (req, res) => {
   const bucket = storage.bucket("conference-planner")
