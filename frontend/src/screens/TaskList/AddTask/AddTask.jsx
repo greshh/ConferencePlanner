@@ -10,7 +10,7 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks }) => {
     const description = document.getElementById("description").value;
 
     try {
-      const res = await fetch(`http://localhost:3000/create-task/`, {
+      const res = await fetch(`/api/tasks/post`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_name, due_date, description }),
@@ -66,9 +66,9 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks }) => {
                         return;
                       }
                       const newTask = await createTask();
-                      const refreshedTask = await fetch(`http://localhost:3000/task/${newTask.task_id}`).then(res => res.json());
+                      const refreshedTask = await fetch(`/api/tasks/get/${newTask.task_id}`).then(res => res.json());
                       selectTaskId(refreshedTask.task_id);
-                      const refreshedTasks = await fetch("http://localhost:3000/tasks").then(res => res.json());
+                      const refreshedTasks = await fetch("/api/tasks").then(res => res.json());
                       setTasks(refreshedTasks);
                       setPanel(1); 
                     }}>Save</button>

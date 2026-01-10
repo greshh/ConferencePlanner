@@ -22,7 +22,7 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
     const description = document.getElementById("description").value;
 
     try {
-      const res = await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+      const res = await fetch(`/api/tasks/patch/${task.task_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_name, due_date: new Date(due_date), description }),
@@ -118,9 +118,9 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
                           return;
                         }
                         await updateTask();
-                        const refreshedTask = await fetch(`http://localhost:3000/task/${task.task_id}`).then(res => res.json());
+                        const refreshedTask = await fetch(`/api/tasks/get/${task.task_id}`).then(res => res.json());
                         selectTaskId(refreshedTask.task_id);
-                        const refreshedTasks = await fetch("http://localhost:3000/tasks").then(res => res.json());
+                        const refreshedTasks = await fetch("/api/tasks").then(res => res.json());
                         setTasks(refreshedTasks);
                         setPanel(1); 
                       }}>Save</button>

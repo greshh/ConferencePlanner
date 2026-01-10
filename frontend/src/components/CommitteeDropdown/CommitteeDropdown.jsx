@@ -9,7 +9,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
 
   const fetchCommittees = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/committees`);
+      const res = await fetch(`/api/committees`);
       const data = await res.json();
       return data;
     } catch (err) {
@@ -36,7 +36,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
 
     setSaving(true);
     try {
-      const res = await fetch(`http://localhost:3000/update-committee-assignment`, {
+      const res = await fetch(`/api/task_committees/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: task.task_id, committee_id: committee.committee_id }),
@@ -59,7 +59,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
       <img onClick={async () => {
         toggleMemberList(committeeListOpen); 
         setCommittees(await fetchCommittees()); 
-      }} src={'/icons/edit-task/SmallAddButton.svg'} className="small-add-button" style={{ zIndex: 1 }}></img>
+      }} src={'./icons/edit-task/SmallAddButton.svg'} className="small-add-button" style={{ zIndex: 1 }}></img>
       <div className="committee-content" style={{ display: committeeListOpen ? "block" : "none", zIndex: 501 }}>
         {/* Add all committees */}
         {committees.map((committee) => 

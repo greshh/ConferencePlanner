@@ -18,7 +18,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
     const newNote = document.getElementById("notes").value;
 
     try {
-      const res = await fetch(`http://localhost:3000/update-notes/${notes.assignment_id}`, {
+      const res = await fetch(`/api/assignments/notes/patch/${notes.assignment_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personal_notes: newNote }),
@@ -35,10 +35,11 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
     const fetchAssigned = async () => {
       const data = await loadAssigned(task.task_id);
       setAssignment(data);
+      console.log(data);
     }
     const getUser = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/member/${memberId.memberId}`);
+        const res = await fetch(`/api/members/${memberId.memberId}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -48,7 +49,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
       }
     }
     const fetchNotes = async () => {
-      const res = await fetch(`http://localhost:3000/notes/${task.task_id}/${memberId.memberId}`);
+      const res = await fetch(`/api/assignments/notes/get/${task.task_id}&${memberId.memberId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const notes = Array.isArray(data) ? data[0] : [];
@@ -106,8 +107,8 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     }
                   </div>
                   {assignment.committees && assignment.committees.map((c) => (
-                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
-                      {c.committee.committee_name}
+                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.colour }}>
+                      {c.committee_name}
                     </span> 
                   ))}
                 </div>
@@ -166,10 +167,10 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     assignment.members.map(m => (
                       <img
                         key={m.assignment_id}
-                        src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member.member_id}.jpg`}
+                        src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member_id}.jpg`}
                         className="avatar"
-                        alt={m.member.first_name}
-                        title={`${m.member.first_name} ${m.member.last_name}`}
+                        alt={m.first_name}
+                        title={`${m.first_name} ${m.last_name}`}
                         onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                       />
                     )
@@ -201,7 +202,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Yes, I'm sure",
                   onClick: async () => {
-                    const res = await fetch(`http://localhost:3000/delete-task/${task.task_id}`, {
+                    const res = await fetch(`/api/tasks/delete/${task.task_id}`, {
                       method: "DELETE",
                     });
                     if (!res.ok) {
@@ -239,7 +240,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       }
                       
                       try {
-                        const link = await fetch("http://localhost:3000/get-url", {
+                        const link = await fetch("/api/url", {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ url: inputLink })
@@ -263,7 +264,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
                         task.attachments.push(newLink);
   
-                        await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+                        await fetch(`/api/tasks/patch/${task.task_id}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
@@ -306,7 +307,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       data.append("file", inputFile);
 
                       try {
-                        await fetch(`http://localhost:3000/upload-file`, {
+                        await fetch(`/api/upload-file`, {
                           method: "PATCH",
                           body: data
                         });
@@ -325,7 +326,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                         task.attachments.push(newFile);
                         console.log(task.attachments);
 
-                        await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+                        await fetch(`/api/tasks/patch/${task.task_id}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })

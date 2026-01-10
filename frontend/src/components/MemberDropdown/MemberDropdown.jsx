@@ -12,7 +12,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
     const members = [];
     for (const c of assignment.committees) {
       try {
-        const res = await fetch(`http://localhost:3000/committee-members/${c.committee.committee_id}`);
+        const res = await fetch(`/api/memberships/${c.committee.committee_id}`);
         const data = await res.json();
         members.push(data);
       } catch (err) {
@@ -20,20 +20,6 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
       }
     }
     setCommitteeMembers(members);
-  };
-
-  const fetchCommitteeHeads = async (assignment) => {
-    const committeeHeads = [];
-    for (const c of assignment.committees) {
-      try {
-        const res = await fetch(`http://localhost:3000/committee-heads/${c.committee.committee_id}`);
-        const data = await res.json();
-        committeeHeads.push(data);
-      } catch (err) {
-        console.error("Failed to load committee heads:", err);
-      }
-    }
-    setCommitteeHeads(committeeHeads);
   };
 
   // Toggles the "Assigned" member list dropdown
@@ -54,7 +40,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
 
     setSaving(true);
     try {
-      const res = await fetch(`http://localhost:3000/update-member-assignment`, {
+      const res = await fetch(`/api/assignment/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: task.task_id, member_id: member.member_id }),
@@ -78,7 +64,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
         toggleMemberList(memberListOpen); 
         await fetchCommitteeMembers(assignment); 
         // await fetchCommitteeHeads(assignment); // UNCOMMENT IF COMMITTEE HEADS ARE TO BE DISPLAYED - see 10/12/2025
-      }} src={'/icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
+      }} src={'./icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
       <div className="member-content" style={{ display: memberListOpen ? "block" : "none" }}>
         {/* Add all committee members for the selected committees */}
         {committeeMembers.map((committee) => 

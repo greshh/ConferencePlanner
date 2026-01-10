@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
 import "./style.css";
 
-export const Sidebar = (user, USER_LOGIN) => {
+export const Sidebar = (user) => {
   return (
     <div className='sidebar'>
       <div className='link'>
         <p>Task List</p>
       </div>
-      {user.USER_LOGIN && user.user != null ? (
+      {user != null ? (
         <div className="user">
           <img
-            src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${user.user.member_id}.jpg`}
+            src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${user.member_id}.jpg`}
             className="user-avatar"
-            alt={user.user.first_name}
-            title={`${user.user.first_name} ${user.user.last_name}`}
-            onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
+            alt={user.first_name}
+            title={`${user.first_name} ${user.last_name}`}
+            onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference-planner/profile-pic/unknown.jpg"; }}
           />
           <p>{user.user.first_name} {user.user.last_name}</p>
         </div>

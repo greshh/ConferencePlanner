@@ -2,13 +2,13 @@
 export async function loadAssigned(id) {
   try {
     // Fetch assigned members
-    const res1 = await fetch(`http://localhost:3000/assigned/${id}`);
+    const res1 = await fetch(`/api/assignments/${id}`);
     if (!res1.ok) throw new Error(`HTTP ${res1.status}`);
     const data1 = await res1.json();
     const members = Array.isArray(data1) ? data1 : [];
 
     // Fetch assigned committees
-    const res2 = await fetch(`http://localhost:3000/assigned-committees/${id}`);
+    const res2 = await fetch(`/api/task_committees/${id}`);
     if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
     const data2 = await res2.json();
     const committees = Array.isArray(data2) ? data2 : [];

@@ -15,7 +15,7 @@ export const AttachmentDropdown = ({ setShowPopup }) => {
     <div className="attachment-dropdown" style={{position: "relative"}}>  
       <img onClick={async () => {
         toggleAttachmentList(attachmentListOpen); 
-      }} src={'/icons/edit-task/SmallAddButton.svg'} className="small-add-button" style={{ zIndex: 1 }}></img>
+      }} src={'./icons/edit-task/SmallAddButton.svg'} className="small-add-button" style={{ zIndex: 1 }}></img>
       <div className="attachment-content" style={{ display: attachmentListOpen ? "block" : "none", zIndex: 500 }}>
         <div className="attachment-selection" onClick={()=>setShowPopup(2)}>
           <img src="./icons/attachments/Link.svg" className="icon"></img>

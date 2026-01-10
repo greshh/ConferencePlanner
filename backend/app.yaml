@@ -1,1 +1,5 @@
 runtime: nodejs20
+env: standard
+entrypoint: node index.js
+beta_settings:
+  cloud_sql_instances: forward-adviser-479605-q8:australia-southeast1:conference-planner-database

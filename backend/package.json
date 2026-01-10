@@ -8,6 +8,7 @@
                 "prisma:pull": "prisma db pull"
         },
         "dependencies": {
+                "@google-cloud/cloud-sql-connector": "^1.8.5",
                 "@google-cloud/storage": "^7.18.0",
                 "@prisma/adapter-mariadb": "^7.2.0",
                 "@prisma/client": "^7.2.0",
@@ -16,7 +17,9 @@
                 "dotenv": "^17.2.3",
                 "express": "^5.2.1",
                 "fs": "^0.0.1-security",
-                "multer": "^2.0.2"
+                "multer": "^2.0.2",
+                "mysql2": "^3.16.0",
+                "pg": "^8.16.3"
         },
         "devDependencies": {
                 "@types/node": "^25.0.3",

@@ -26,7 +26,7 @@ export const TaskList = (memberId) => {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch("http://localhost:3000/tasks");
+      const res = await fetch("/api/tasks");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
@@ -43,7 +43,7 @@ export const TaskList = (memberId) => {
     console.log("newValue:", newValue);
     setSaving(true);
     try {
-      const res = await fetch(`http://localhost:3000/update-task/${selectedTaskId}`, {
+      const res = await fetch(`/api/tasks/patch/${selectedTaskId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed: newValue }),
@@ -65,7 +65,7 @@ export const TaskList = (memberId) => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/member/${memberId.memberId}`);
+        const res = await fetch(`/api/members/${memberId.memberId}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -95,11 +95,9 @@ export const TaskList = (memberId) => {
         <div className="my-tasks">MY TASKS</div>
       </div>
       { !USER_LOGIN || (USER_LOGIN && user != null) ? (
-        <Sidebar user={user} USER_LOGIN={USER_LOGIN} />
+        <Sidebar user={user} />
       ) : (
-        <div className="loading-sidebar">
-          <Loading/>
-        </div>
+        <div className="loading-sidebar"/>
       )}
       <div className="content">
         <div className="left-panel">

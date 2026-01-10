@@ -11,7 +11,7 @@
 }
 
 .check-unchecked {
-  background-image: url("/icons/task-bubble/Unchecked.svg");
+  background-image: url("./icons/task-bubble/Unchecked.svg");
   height: var(--checkbox-size);
   width: var(--checkbox-size);
   background-repeat: no-repeat;
@@ -21,7 +21,7 @@
 }
 
 .check-checked {
-  background-image: url("/icons/task-bubble/Checked.svg");
+  background-image: url("./icons/task-bubble/Checked.svg");
   height: var(--checkbox-size);
   width: var(--checkbox-size);
   background-repeat: no-repeat;
