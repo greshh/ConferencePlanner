@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { loadAssigned } from "../../../hooks/loadAssigned";
-import { loadTask } from "../../../hooks/loadTask";
 import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import "./style.css";
 
-export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
+export const EditTask = ({ task, setPanel, selectTaskId, setTasks, development }) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
+
+  const api_base = development ? "http://localhost:4000" : "";
 
   useEffect(() => {
     const fetchAssigned = async () => {
-      const data = await loadAssigned(task.task_id);
+      if (task == null || task.task_id == null) return;
+      const data = await loadAssigned(task.task_id, development);
       setAssignment(data);
     }
     fetchAssigned();
@@ -22,16 +24,16 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
     const description = document.getElementById("description").value;
 
     try {
-      const res = await fetch(`/api/tasks/patch/${task.task_id}`, {
+      const res = await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_name, due_date: new Date(due_date), description }),
+        body: JSON.stringify({ task_name: task_name, due_date: due_date, description: description }),
       });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
     } catch (err) {
-      console.error("Failed to update task completed:", err);
+      console.error("Failed to update task details:", err);
     }
   };
 
@@ -74,11 +76,12 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
                         task={task}
                         assignment={assignment}
                         setAssignment={setAssignment}
+                        development={development}
                       />
                     </div>
                     {assignment.committees && assignment.committees.map((c) => (
-                      <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
-                        {c.committee.committee_name}
+                      <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.colour }}>
+                        {c.committee_name}
                       </span> 
                     ))}
                   </div>
@@ -89,17 +92,21 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
                         assignment.members.map(m => (
                           <img
                             key={m.assignment_id}
-                            src={`https://storage.googleapis.com/conference_planner_pfp/member/${m.member.member_id}.jpg`}
+                            src={`https://storage.googleapis.com/conference_planner_pfp/member/${m.member_id}.jpg`}
                             className="avatar"
-                            alt={m.member.first_name}
-                            title={`${m.member.first_name} ${m.member.last_name}`}
+                            alt={m.first_name}
+                            title={`${m.first_name} ${m.last_name}`}
                             onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                           />
                         )
                       )) : (
                         <div/>
                       )}
-                      <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />
+                      <MemberDropdown 
+                        task={task} 
+                        assignment={assignment} 
+                        setAssignment={setAssignment} 
+                        development={development} />
                     </div>
                   </div>
                   <div style={{display: 'flex', gap: '1rem'}}>
@@ -118,9 +125,8 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks }) => {
                           return;
                         }
                         await updateTask();
-                        const refreshedTask = await fetch(`/api/tasks/get/${task.task_id}`).then(res => res.json());
-                        selectTaskId(refreshedTask.task_id);
-                        const refreshedTasks = await fetch("/api/tasks").then(res => res.json());
+                        const refreshedTask = await fetch(`${api_base}/api/tasks/get/${task.task_id}`).then(res => res.json());
+                        const refreshedTasks = await fetch(`${api_base}/api/tasks`).then(res => res.json());
                         setTasks(refreshedTasks);
                         setPanel(1); 
                       }}>Save</button>

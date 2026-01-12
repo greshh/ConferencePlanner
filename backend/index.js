@@ -10,6 +10,9 @@ import { Connector } from "@google-cloud/cloud-sql-connector";
 import "dotenv/config";
 import fetch from "node-fetch";
 
+// If true, enable development settings. This must also be updated on the frontend.
+const DEVELOPMENT = true;
+
 const mimeAllowList = JSON.parse(
   fs.readFileSync(
     new URL("./config/mime-allowlist.json", import.meta.url),
@@ -84,11 +87,11 @@ const readDatabase = async (query) => {
   }
 };
 
-const updateDatabase = async (query) => {
+const updateDatabase = async (query, parameters) => {
   const connection = await pool.getConnection();
   console.log("Successfully connected to the database");
   try {
-    const [result] = await connection.execute(query);
+    const [result] = parameters ? await connection.execute(query, parameters) : await connection.execute(query);
     console.log("Query successful. Affected rows: ", result.affectedRows);
     return result;
   } catch (err) {
@@ -252,16 +255,14 @@ app.patch("/api/tasks/patch/:id", async (req, res) => {
   }
 
   try {
-    const query = `UPDATE task SET 
-      ${completed !== undefined ? `completed = ${completed},` : ""}
-      ${task_name !== undefined ? `task_name = ${task_name},` : ""}
-      ${due_date !== undefined ? `due_date = ${new Date(due_date)},` : ""}
-      ${description !== undefined ? `description = ${description},` : ""}
-      ${assigned_members !== undefined ? `assigned_members = ${assigned_members},` : ""}
-      ${attachments !== undefined ? `attachments = ${attachments}` : ""}
-      WHERE task_id = ${parseInt(id)}`;
-    const updated = await updateDatabase(query);
-    res.json(updated);
+    console.log(`UPDATE task SET completed = ${completed == "true" ? 1 : 0} WHERE task_id = ${id}`);
+    if (completed != null) await updateDatabase(`UPDATE task SET completed = ${completed == true ? 1 : 0} WHERE task_id = ${id}`, null);
+    if (task_name) await updateDatabase(`UPDATE task SET task_name = ? WHERE task_id = ?`, [task_name, id]);
+    if (due_date) await updateDatabase(`UPDATE task SET due_date = '${due_date}' WHERE task_id = ${id}`, null);
+    if (description) await updateDatabase(`UPDATE task SET description = ? WHERE task_id = ?`, [description, id]);
+    if (assigned_members) await updateDatabase(`UPDATE task SET assigned_members = ${assigned_members} WHERE task_id = ${id}`, null);
+    if (attachments) await updateDatabase(`UPDATE task SET attachments = '${JSON.stringify(attachments)}' WHERE task_id = ${id}`, null);
+    res.sendStatus(200);
   } catch (err) {
     console.error("Failed to update task:", err);
     res.status(500).json({ error: err.message || String(err) });
@@ -269,7 +270,7 @@ app.patch("/api/tasks/patch/:id", async (req, res) => {
 });
 
 app.patch("/api/assignments/notes/patch/:assignment_id", async (req, res) => {
-  const assignment_id = Number(req.params.id);
+  const assignment_id = Number(req.params.assignment_id);
   const { personal_notes } = req.body;
 
   if (typeof assignment_id !== "number" || Number.isNaN(assignment_id)) {
@@ -277,10 +278,8 @@ app.patch("/api/assignments/notes/patch/:assignment_id", async (req, res) => {
   }
 
   try {
-    const query = `UPDATE assignment SET 
-      personal_notes = ${personal_notes}
-      WHERE assignment_id = ${parseInt(assignment_id)}`;
-    const updated = await updateDatabase(query);
+    const query = `UPDATE assignment SET personal_notes = ? WHERE assignment_id = ${parseInt(assignment_id)}`;
+    const updated = await updateDatabase(query, [personal_notes]);
     res.json(updated);
   } catch (err) {
     console.error("Failed to update notes:", err);
@@ -291,22 +290,22 @@ app.patch("/api/assignments/notes/patch/:assignment_id", async (req, res) => {
 app.patch("/api/assignments/patch", async (req, res) => {
   const { task_id, member_id } = req.body;
   try {
-    const assignmentRows = await readDatabase(
-      `SELECT assignment_id FROM assignment 
-      WHERE task_id = ${parseInt(task_id)} 
-      AND member_id = ${parseInt(member_id)}`
-    );
-    const assignment = assignmentRows.length > 0 ? assignmentRows[0] : null;
+    var assignment = null;
+    if (task_id != null) {
+      const assignmentRows = await readDatabase(
+        `SELECT assignment_id FROM assignment WHERE task_id = ${parseInt(task_id)} AND member_id = ${parseInt(member_id)}`
+      );
+      assignment = assignmentRows.length > 0 ? assignmentRows[0] : null;
+    }
 
     // If the member is already assigned, remove the assignment.
     // Otherwise, add the member.
     var response = "";
     if (assignment != null) {
-      response = await updateDatabase(`DELETE FROM assignment WHERE assignment_id = ${assignment.assignment_id}`);
+      response = await updateDatabase(`DELETE FROM assignment WHERE assignment_id = ${assignment.assignment_id}`, null);
     } else {
-      response = await updateDatabase(`INSERT INTO assignment (task_id, member_id) VALUES (${parseInt(task_id)}, ${parseInt(member_id)})`);
+      response = await updateDatabase(`INSERT INTO assignment (task_id, member_id) VALUES (${parseInt(task_id)}, ${parseInt(member_id)})`, null);
     }
-
     res.json(response);
   } catch (err) {
     console.error("Failed to update assignment:", err);
@@ -314,7 +313,7 @@ app.patch("/api/assignments/patch", async (req, res) => {
   }
 });
 
-app.patch("/api/task_committee/patch", async (req, res) => {
+app.patch("/api/task_committees/patch", async (req, res) => {
     const { task_id, committee_id } = req.body;
     try {
       const assignmentRows = await readDatabase(
@@ -328,9 +327,9 @@ app.patch("/api/task_committee/patch", async (req, res) => {
       // Otherwise, add the committee.
       var response = "";
       if (assignment != null) {
-        response = await updateDatabase(`DELETE FROM task_committee WHERE task_committee_id = ${assignment.task_committee_id}`);
+        response = await updateDatabase(`DELETE FROM task_committee WHERE task_committee_id = ${assignment.task_committee_id}`, null);
       } else {
-        response = await updateDatabase(`INSERT INTO task_committee (task_id, committee_id) VALUES (${parseInt(task_id)}, ${parseInt(committee_id)})`);
+        response = await updateDatabase(`INSERT INTO task_committee (task_id, committee_id) VALUES (${parseInt(task_id)}, ${parseInt(committee_id)})`, null);
       }
 
       res.json(response);
@@ -345,10 +344,10 @@ app.patch("/api/task_committee/patch", async (req, res) => {
 app.delete("/api/tasks/delete/:id", async (req, res) => {
   const id = Number(req.params.id);
   try {
-    updateDatabase(`DELETE FROM assignment WHERE task_id = ${id}`);
-    updateDatabase(`DELETE FROM task_committee WHERE task_id = ${id}`);
-    updateDatabase(`DELETE FROM workflow_task WHERE task_id = ${id}`);
-    const deleted = await updateDatabase(`DELETE FROM task WHERE task_id = ${id}`);
+    updateDatabase(`DELETE FROM assignment WHERE task_id = ${id}`, null);
+    updateDatabase(`DELETE FROM task_committee WHERE task_id = ${id}`, null);
+    updateDatabase(`DELETE FROM workflow_task WHERE task_id = ${id}`, null);
+    const deleted = await updateDatabase(`DELETE FROM task WHERE task_id = ${id}`, null);
     res.json(deleted);
   } catch (err) {
     console.error("Failed to delete task:", err);
@@ -363,8 +362,9 @@ app.post("/api/tasks/post", async (req, res) => {
   try {
     const newTask = await addToDatabase(
       `INSERT INTO task (task_name, due_date, description, completed) 
-      VALUES (${task_name}, ${new Date(due_date)}, ${description}, false)`, [task_name, new Date(due_date), description]
+      VALUES (?, ?, ?, ?)`, [task_name, new Date(due_date), description, false]
     );
+    
     res.json(newTask);
   } catch (err) {
     console.error("Failed to create task:", err);
@@ -390,7 +390,7 @@ app.post("/api/url", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 await connectWithConnector({});
 
 app.listen(PORT, async () => {

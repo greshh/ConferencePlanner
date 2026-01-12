@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { loadAssigned } from "../../hooks/loadAssigned";
 import "./style.css";
 
 export const AttachmentDropdown = ({ setShowPopup }) => {

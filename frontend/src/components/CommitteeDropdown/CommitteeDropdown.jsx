@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { loadAssigned } from "../../hooks/loadAssigned";
 import "./style.css";
 
-export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
+export const CommitteeDropdown = ({ task, assignment, setAssignment, development } ) => {
   const [committees, setCommittees] = useState([]);
   const [committeeListOpen, setCommitteeListOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const api_base = development ? "http://localhost:4000" : "";
+
   const fetchCommittees = async () => {
     try {
-      const res = await fetch(`/api/committees`);
+      const res = await fetch(`${api_base}/api/committees`);
       const data = await res.json();
       return data;
     } catch (err) {
@@ -26,7 +28,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
 
   // Checks if a committee is currently assigned to the task
   const checkCommitteeChecked = (committeeId) => {
-    return assignment.committees.some((m) => m.committee.committee_id == committeeId);
+    return assignment.committees.some((m) => m.committee_id == committeeId);
   }
 
   const toggleCommitteeChecked = async (committee) => {
@@ -36,7 +38,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
 
     setSaving(true);
     try {
-      const res = await fetch(`/api/task_committees/patch`, {
+      const res = await fetch(`${api_base}/api/task_committees/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: task.task_id, committee_id: committee.committee_id }),
@@ -48,7 +50,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment } ) => {
       console.error("Failed to update task:", err);
       newValue = checked; // Revert optimistic UI update
     } finally {
-      setAssignment(await loadAssigned(task.task_id));
+      setAssignment(await loadAssigned(task.task_id, development));
       setSaving(false);
       return newValue;
     }

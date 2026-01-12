@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { loadTask } from "../../hooks/loadTask";
+import React from "react";
 import "./style.css";
 
 export const TaskBubble = ({ task, onToggleComplete }) => {
-  useEffect(() => {
-
-  }, [task]);
-
   return (
     task != null && task.task_name != null && task.completed != null ? (
       <div className={`task-bubble`}>

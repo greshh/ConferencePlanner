@@ -9,12 +9,14 @@ import { EditTask } from "./EditTask/EditTask";
 import { AddTask } from "./AddTask/AddTask";
 import "./style.css";
 
-export const TaskList = (memberId) => {
+export const TaskList = ({ memberId, development }) => {
 
   /* USER_LOGIN is set to FALSE for development purposes.
      Upon deployment, the user should only see their own tasks and personal notes is used. 
      Upon development, all the tasks can be seen and personal notes is disabled.*/
   const USER_LOGIN = true;
+
+  const api_base = development ? "http://localhost:4000" : "";
 
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState(null);
@@ -26,7 +28,7 @@ export const TaskList = (memberId) => {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch("/api/tasks");
+      const res = await fetch(`${api_base}/api/tasks`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
@@ -40,10 +42,9 @@ export const TaskList = (memberId) => {
     const selectedTask = tasks.find(t => t.task_id === selectedTaskId);
     if (saving) return;
     const newValue = !selectedTask.completed;
-    console.log("newValue:", newValue);
     setSaving(true);
     try {
-      const res = await fetch(`/api/tasks/patch/${selectedTaskId}`, {
+      const res = await fetch(`${api_base}/api/tasks/patch/${selectedTaskId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed: newValue }),
@@ -65,7 +66,7 @@ export const TaskList = (memberId) => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await fetch(`/api/members/${memberId.memberId}`);
+        const res = await fetch(`${api_base}/api/members/${memberId}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -134,9 +135,9 @@ export const TaskList = (memberId) => {
           {
             {
               0: <div/>,
-              1: tasks && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={memberId} USER_LOGIN={USER_LOGIN} />,
-              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />,
-              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} />
+              1: tasks && selectedTaskId && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={memberId} USER_LOGIN={USER_LOGIN} development={development} />,
+              2: tasks && selectedTaskId && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} />,
+              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={memberId} />
             } [rightPanel]
           }
         </div>

@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { loadAssigned } from "../../hooks/loadAssigned";
 import "./style.css";
 
-export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
+export const MemberDropdown = ({ task, assignment, setAssignment, development } ) => {
   const [memberListOpen, setMemberListOpen] = useState(false);
   const [committeeMembers, setCommitteeMembers] = useState([]); // Array by committee then by members
-  const [committeeHeads, setCommitteeHeads] = useState([]); // Array by committee then by committee heads
   const [saving, setSaving] = useState(false);
+
+  const api_base = development ? "http://localhost:4000" : "";
 
   const fetchCommitteeMembers = async (assignment) => {
     const members = [];
     for (const c of assignment.committees) {
       try {
-        const res = await fetch(`/api/memberships/${c.committee.committee_id}`);
+        const res = await fetch(`${api_base}/api/memberships/${c.committee_id}`);
         const data = await res.json();
         members.push(data);
       } catch (err) {
@@ -30,7 +31,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
 
   // Checks if a member is currently assigned to the task
   const checkMemberChecked = (memberId) => {
-    return assignment.members.some((m) => m.member.member_id == memberId);
+    return assignment.members.some((m) => m.member_id == memberId);
   }
 
   const toggleMemberChecked = async (member) => {
@@ -40,7 +41,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
 
     setSaving(true);
     try {
-      const res = await fetch(`/api/assignment/patch`, {
+      const res = await fetch(`${api_base}/api/assignments/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: task.task_id, member_id: member.member_id }),
@@ -52,7 +53,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
       console.error("Failed to update task:", err);
       newValue = checked; // Revert optimistic UI update
     } finally {
-      setAssignment(await loadAssigned(task.task_id));
+      setAssignment(await loadAssigned(task.task_id, development));
       setSaving(false);
       return newValue;
     }
@@ -69,25 +70,19 @@ export const MemberDropdown = ({ task, assignment, setAssignment } ) => {
         {/* Add all committee members for the selected committees */}
         {committeeMembers.map((committee) => 
           committee.map((m) => 
-            <div className="member-selection" key={m.member.member_id}>
+            <div className="member-selection" key={m.member_id}>
               <div className="checkbox">
                 <div
-                  className={checkMemberChecked(m.member.member_id) ? "check-checked" : "check-unchecked"}
-                  onClick={()=>toggleMemberChecked(m.member)}
+                  className={checkMemberChecked(m.member_id) ? "check-checked" : "check-unchecked"}
+                  onClick={()=>toggleMemberChecked(m)}
                   role="checkbox"
-                  aria-checked={()=>checkMemberChecked(m.member.member_id)}
+                  aria-checked={()=>checkMemberChecked(m.member_id)}
                   tabIndex={0}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
                   style={{ cursor: saving ? 'wait' : 'pointer' }}
                 />
               </div>
-              <p onClick={()=>toggleMemberChecked(m.member)}>{m.member.first_name} {m.member.last_name}</p>
-            </div>
-        ))}
-        {committeeHeads.map((committee) => 
-          committee.map((ch) => 
-            <div className="member-selection">
-              <p key={ch.committee_head_id}>{ch.first_name} {ch.last_name}</p>
+              <p onClick={()=>toggleMemberChecked(m)}>{m.first_name} {m.last_name}</p>
             </div>
         ))}
       </div>

@@ -8,17 +8,20 @@ import { CommitteeDropdown } from "../../../components/CommitteeDropdown/Committ
 import { AttachmentDropdown } from "../../../components/AttachmentDropdown";
 import { parse } from "tldts";
 
-export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN }) => {
+export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN, development }) => {
+  const [currentTask, setCurrentTask] = useState(null);
   const [user, setUser] = useState(null);
   const [notes, setNotes] = useState([]);
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
   const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete, 2 = Link, 3 = File
 
+  const api_base = development ? "http://localhost:4000" : "";
+
   const updateNotes = async () => {
     const newNote = document.getElementById("notes").value;
 
     try {
-      const res = await fetch(`/api/assignments/notes/patch/${notes.assignment_id}`, {
+      const res = await fetch(`${api_base}/api/assignments/notes/patch/${notes.assignment_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personal_notes: newNote }),
@@ -33,13 +36,12 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
   useEffect(() => {
     const fetchAssigned = async () => {
-      const data = await loadAssigned(task.task_id);
-      setAssignment(data);
-      console.log(data);
+      const data = await loadAssigned(task.task_id, development);
+      setAssignment(data);  
     }
     const getUser = async () => {
       try {
-        const res = await fetch(`/api/members/${memberId.memberId}`);
+        const res = await fetch(`${api_base}/api/members/${memberId}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -49,7 +51,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
       }
     }
     const fetchNotes = async () => {
-      const res = await fetch(`/api/assignments/notes/get/${task.task_id}&${memberId.memberId}`);
+      const res = await fetch(`${api_base}/api/assignments/notes/get/${task.task_id}&${memberId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const notes = Array.isArray(data) ? data[0] : [];
@@ -103,6 +105,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                         task={task}
                         assignment={assignment}
                         setAssignment={setAssignment}
+                        development={development}
                       />
                     }
                   </div>
@@ -177,7 +180,14 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   )) : (
                     <div/>
                   )}
-                  {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />}
+                  {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && 
+                    <MemberDropdown 
+                      task={task} 
+                      assignment={assignment} 
+                      setAssignment={setAssignment}
+                      development={development} 
+                    />
+                  }
                 </div>
               </div>
               {(USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN ? (
@@ -202,7 +212,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Yes, I'm sure",
                   onClick: async () => {
-                    const res = await fetch(`/api/tasks/delete/${task.task_id}`, {
+                    const res = await fetch(`${api_base}/api/tasks/delete/${task.task_id}`, {
                       method: "DELETE",
                     });
                     if (!res.ok) {
@@ -240,7 +250,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       }
                       
                       try {
-                        const link = await fetch("/api/url", {
+                        const link = await fetch(`${api_base}/api/url`, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ url: inputLink })
@@ -264,7 +274,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
                         task.attachments.push(newLink);
   
-                        await fetch(`/api/tasks/patch/${task.task_id}`, {
+                        await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
@@ -307,7 +317,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       data.append("file", inputFile);
 
                       try {
-                        await fetch(`/api/upload-file`, {
+                        await fetch(`${api_base}/api/upload-file`, {
                           method: "PATCH",
                           body: data
                         });
@@ -326,7 +336,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                         task.attachments.push(newFile);
                         console.log(task.attachments);
 
-                        await fetch(`/api/tasks/patch/${task.task_id}`, {
+                        await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
