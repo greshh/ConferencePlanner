@@ -136,8 +136,8 @@ export const TaskList = ({ memberId, development }) => {
             {
               0: <div/>,
               1: tasks && selectedTaskId && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={memberId} USER_LOGIN={USER_LOGIN} development={development} />,
-              2: tasks && selectedTaskId && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} />,
-              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={memberId} />
+              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} setTasks={setTasks} development={development} memberId={memberId} USER_LOGIN={USER_LOGIN} />,
+              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={memberId} USER_LOGIN={USER_LOGIN} />
             } [rightPanel]
           }
         </div>

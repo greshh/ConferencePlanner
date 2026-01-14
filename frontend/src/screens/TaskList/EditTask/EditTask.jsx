@@ -4,7 +4,7 @@ import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdow
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import "./style.css";
 
-export const EditTask = ({ task, setPanel, selectTaskId, setTasks, development }) => {
+export const EditTask = ({ task, setPanel, setTasks, development, memberId, USER_LOGIN}) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
 
   const api_base = development ? "http://localhost:4000" : "";
@@ -92,11 +92,11 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks, development }
                         assignment.members.map(m => (
                           <img
                             key={m.assignment_id}
-                            src={`https://storage.googleapis.com/conference_planner_pfp/member/${m.member_id}.jpg`}
+                            src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member_id}.jpg`}
                             className="avatar"
                             alt={m.first_name}
                             title={`${m.first_name} ${m.last_name}`}
-                            onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
+                            onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference-planner/profile-pic/unknown.jpg"; }}
                           />
                         )
                       )) : (
@@ -125,8 +125,9 @@ export const EditTask = ({ task, setPanel, selectTaskId, setTasks, development }
                           return;
                         }
                         await updateTask();
-                        const refreshedTask = await fetch(`${api_base}/api/tasks/get/${task.task_id}`).then(res => res.json());
-                        const refreshedTasks = await fetch(`${api_base}/api/tasks`).then(res => res.json());
+                        const refreshedTasks = USER_LOGIN ? 
+                          await fetch(`${api_base}/api/tasks/${memberId}`).then(res => res.json()) : 
+                          await fetch(`${api_base}/api/tasks`).then(res => res.json());
                         setTasks(refreshedTasks);
                         setPanel(1); 
                       }}>Save</button>
