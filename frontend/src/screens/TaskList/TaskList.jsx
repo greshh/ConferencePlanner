@@ -28,7 +28,7 @@ export const TaskList = ({ memberId, development }) => {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch(`${api_base}/api/tasks`);
+      const res = USER_LOGIN ? await fetch(`${api_base}/api/tasks/${memberId}`) : await fetch(`${api_base}/api/tasks`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);

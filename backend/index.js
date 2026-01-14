@@ -190,6 +190,14 @@ app.get("/api/tasks", async (req, res) => {
   res.json(tasks);
 });
 
+app.get("/api/tasks/:member_id", async (req, res) => {
+  const member_id = req.params.member_id;
+  const tasks = await readDatabase(
+    `SELECT t.* FROM task t JOIN assignment a ON t.task_id = a.task_id WHERE a.member_id = ${member_id}`
+  );
+  res.json(tasks);
+});
+
 app.get("/api/committees", async (req, res) => {
   const committees = await readDatabase("SELECT * FROM committee");
   res.json(committees);
