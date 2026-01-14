@@ -11,7 +11,7 @@ import "dotenv/config";
 import fetch from "node-fetch";
 
 // If true, enable development settings. This must also be updated on the frontend.
-const DEVELOPMENT = true;
+const DEVELOPMENT = false;
 
 const mimeAllowList = JSON.parse(
   fs.readFileSync(

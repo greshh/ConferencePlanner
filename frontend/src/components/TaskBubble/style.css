@@ -17,7 +17,7 @@
 }
 
 .task-bubble .check-unchecked {
-        background-image: url("./icons/task-bubble/Unchecked.svg");
+        background-image: url("../icons/task-bubble/Unchecked.svg");
         height: 40%;
         width: 40%;
         background-repeat: no-repeat;
@@ -27,7 +27,7 @@
 }
 
 .task-bubble .check-checked {
-        background-image: url("./icons/task-bubble/Checked.svg");
+        background-image: url("../icons/task-bubble/Checked.svg");
         height: 40%;
         width: 40%;
         background-repeat: no-repeat;
