@@ -144,7 +144,7 @@ export const TaskList = ({ memberId, development }) => {
       </div>
 
       <div className="add-a-task-panel">
-        <AddATask setPanel={setPanel} />
+        {user != null && user.is_committee_head == 1 && <AddATask setPanel={setPanel} />}
       </div>
     </div>
   );

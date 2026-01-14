@@ -8,7 +8,7 @@ const DEVELOPMENT = true;
 const routes = [
   {
     path: "/",
-    element: <h1>Log-in page goes here</h1>
+    element: <button onClick={() => { window.location.href = "/tasks"; }}>Go to Task List</button>
   }, 
   {
     path: "/tasks",
