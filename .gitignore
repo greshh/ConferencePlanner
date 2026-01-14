@@ -19,6 +19,10 @@ yarn-error.log*
 pnpm-debug.log*
 .eslintcache
 
+# testing
+coverage/
+testExample.txt
+
 # editor/os
 .vscode/
 .idea/
