@@ -4,7 +4,7 @@ import "./style.css";
 export const Sidebar = (user) => {
   return (
     <div className='sidebar'>
-      <div className='link'>
+      <div className='link' onClick={() => { window.location.href = "/tasks"; }}>
         <p>Task List</p>
       </div>
       {user != null ? (
