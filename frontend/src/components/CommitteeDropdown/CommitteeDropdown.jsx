@@ -35,9 +35,24 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment, development
     if (saving) return;
     const checked = checkCommitteeChecked(committee.committee_id);
     let newValue = !checked; // To be used for checkbox UI update
-
     setSaving(true);
+
     try {
+      const assigned = await fetch(`${api_base}/api/members/assigned`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_id: task.task_id, committee_id: committee.committee_id }),
+      });
+      if (!assigned.ok) {
+        throw new Error(`HTTP ${assigned.status}`);
+      }
+      const assignedData = await assigned.json();
+      // If unchecking and there are assigned members, prevent uncheck
+      if (assignedData.length > 0 && !newValue) {
+        alert("Cannot unassign committee while members are assigned to this task.");
+        newValue = checked;
+        return;
+      }
       const res = await fetch(`${api_base}/api/task_committees/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -73,7 +88,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment, development
                 role="checkbox"
                 aria-checked={()=>checkCommitteeChecked(committee.committee_id)}
                 tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCommitteeChecked(committee); } }}
                 style={{ cursor: saving ? 'wait' : 'pointer' }}
               />
             </div>

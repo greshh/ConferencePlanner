@@ -70,7 +70,7 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, USER
                       maxLength="1000"
                       style={{ minWidth: "100%", height: "5rem", marginTop: '1rem', whiteSpace: "pre-wrap" }}
                     ></textarea>
-                    <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
+                    {/* <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                       <h3>COMMITTEES</h3>
                       <CommitteeDropdown
                         task={task}
@@ -83,9 +83,10 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, USER
                       <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.colour }}>
                         {c.committee_name}
                       </span> 
-                    ))}
+                    ))} */}
                   </div>
-                  <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
+                  <div/>
+                  {/* <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
                     <p style={{ lineHeight: '1px' }}>Assigned:</p>
                     <div className="avatar-group">
                       {assignment.members && assignment.members.length > 0 ? (
@@ -108,7 +109,7 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, USER
                         setAssignment={setAssignment} 
                         development={development} />
                     </div>
-                  </div>
+                  </div> */}
                   <div style={{display: 'flex', gap: '1rem'}}>
                     <button type="submit" onClick={async (e) => 
                       { 

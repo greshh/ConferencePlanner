@@ -397,6 +397,18 @@ app.post("/api/url", async (req, res) => {
   }
 });
 
+app.post("/api/members/assigned", async (req, res) => {
+  try {
+    const { committee_id, task_id } = req.body;
+    const members = await readDatabase(
+      `SELECT * FROM member m JOIN membership me ON me.member_id = m.member_id JOIN committee c ON c.committee_id = me.committee_id JOIN assignment a ON a.member_id = m.member_id JOIN conference.task t ON t.task_id = a.task_id WHERE c.committee_id = ${parseInt(committee_id)} AND t.task_id = ${parseInt(task_id)}`);
+    res.json(members);
+  } catch (err) {
+    console.error("Failed to fetch assigned members:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
 const PORT = process.env.PORT || 4000;
 await connectWithConnector({});
 
