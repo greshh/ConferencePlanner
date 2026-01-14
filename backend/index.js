@@ -11,7 +11,7 @@ import "dotenv/config";
 import fetch from "node-fetch";
 
 // If true, enable development settings. This must also be updated on the frontend.
-const DEVELOPMENT = false;
+// const DEVELOPMENT = true;
 
 const mimeAllowList = JSON.parse(
   fs.readFileSync(
@@ -142,7 +142,7 @@ app.get(/^(?!\/api).*/, (req, res) => {
 });
 
 app.patch("/api/upload-file", upload.single("file"), async (req, res) => {
-  const bucket = storage.bucket("conference-planner")
+  const bucket = storage.bucket("conference-planner");
   const { task_id, file_name } = req.body;
   const file = req.file;
 
@@ -159,18 +159,17 @@ app.patch("/api/upload-file", upload.single("file"), async (req, res) => {
 
     const stream = uploadFile.createWriteStream({
       resumable: false,
-      contentType: file.mimetype
+      contentType: file.mimetype,
     });
-  
+
     stream.on("error", (err) => {
       res.status(500).json({ error: "Upload failed: " + err.message });
     });
 
     stream.on("finish", () => {
-      const publicUrl = `https://storage.googleapis.com/attachments/${task_id}/${safe_name}`;
       res.json({
-        file_name: file.originalname,
-        file_url: publicUrl,
+        file_name: file_name,
+        file_url: `https://storage.googleapis.com/conference-planner/attachments/${task_id}/${safe_name}`,
       });
     });
 

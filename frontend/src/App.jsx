@@ -3,7 +3,7 @@ import React from "react";
 import { TaskList } from "./screens/TaskList";
 
 // If true, enable development settings. This must also be updated on the backend.
-const DEVELOPMENT = false;
+const DEVELOPMENT = true;
 
 const routes = [
   {

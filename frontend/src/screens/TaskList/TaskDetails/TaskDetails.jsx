@@ -317,24 +317,24 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       data.append("file", inputFile);
 
                       try {
-                        await fetch(`${api_base}/api/upload-file`, {
+                        const res = await fetch(`${api_base}/api/upload-file`, {
                           method: "PATCH",
                           body: data
                         });
 
+                        const body = await res.json();
+
                         const newFile = {
                           type: "file",
-                          link: `https://storage.googleapis.com/conference_planner_attachments/${task.task_id}/${fileName}`,
-                          name: fileName
+                          link: body.file_url,
+                          name: body.file_name
                         };
 
                         if (!task.attachments) {
                           task.attachments = [];
                         }
 
-                        console.log(task.attachments);
                         task.attachments.push(newFile);
-                        console.log(task.attachments);
 
                         await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
                           method: "PATCH",
