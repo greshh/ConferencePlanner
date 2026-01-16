@@ -1,9 +1,9 @@
-import { createBrowserRouter, Router, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import React from "react";
 import { TaskList } from "./screens/TaskList";
 import { Login } from "./screens/Login";
 
-// If true, enable development settings. This must also be updated on the backend.
+// If true, enable development settings.
 const DEVELOPMENT = true;
 
 function App() {

@@ -13,9 +13,6 @@ import admin from "firebase-admin";
 
 const { auth } = admin;
 
-// If true, enable development settings. This must also be updated on the frontend.
-// const DEVELOPMENT = true;
-
 const mimeAllowList = JSON.parse(
   fs.readFileSync(
     new URL("./config/mime-allowlist.json", import.meta.url),

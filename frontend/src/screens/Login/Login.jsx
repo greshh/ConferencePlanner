@@ -6,7 +6,7 @@ import "./style.css";
 export const Login = ({ setUser, development }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -15,6 +15,7 @@ export const Login = ({ setUser, development }) => {
   async function logIn() {
     try {
       await signInWithEmailAndPassword(getAuth(), email, password).then(async (userCredential) => {
+        setMessage("Success! Logging in.");
         const user = userCredential.user;
         try {
           const res = await fetch(`${api_base}/api/members/login`, {
@@ -27,31 +28,42 @@ export const Login = ({ setUser, development }) => {
           setUser(data.memberId);
           navigate("/tasks");
         } catch (err) {
-          console.error('Error during backend login:', err);
+          console.log('Error during backend login:', err);
         }
       });
     } catch (err) {
-      setError(e.message);
-      alert("Failed to log in: " + err.message);
+      setMessage("Login failed. Please check your email and password.");
     }
   }
 
   return (
-    <>
-      <h1>Log In</h1>
-      {error && <p>{error}</p>}
-      <input 
-        placeholder="Email address"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input 
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={logIn}>Log In</button>
-    </>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" , justifyContent: "center", height: "100vh"}}>
+      <div className="login-container">
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <img src="./icons/login/YFC-9FCBE3.png" alt="YFC logo" style={{ height: "80px" }} />
+          { message && <p style={{ fontStyle: "italic", fontSize: "13px", color: "grey" }}>{message}</p> }
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            { email && <label>{("Email address").toUpperCase()}</label> }
+            <input 
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            { password && <label>{("Password").toUpperCase()}</label> }
+            <input 
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
+        <button onClick={logIn}>Log In</button>
+      </div>
+    </div>
   );
 };
