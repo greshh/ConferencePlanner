@@ -9,6 +9,9 @@ import mysql from "mysql2/promise";
 import { Connector } from "@google-cloud/cloud-sql-connector";
 import "dotenv/config";
 import fetch from "node-fetch";
+import admin from "firebase-admin";
+
+const { auth } = admin;
 
 // If true, enable development settings. This must also be updated on the frontend.
 // const DEVELOPMENT = true;
@@ -31,6 +34,18 @@ const upload = multer({
   limits: {
     fileSize: 20 * 1024 * 1024, // 20 mb
   },
+});
+
+// --------------------------------------------------------------
+//                  FIREBASE CONNECTION SET UP
+// --------------------------------------------------------------
+
+const credentials = JSON.parse(
+  fs.readFileSync('./firebase-credentials.json')
+);
+
+admin.initializeApp({
+  credential: admin.credential.cert(credentials),
 });
 
 // --------------------------------------------------------------
@@ -69,11 +84,11 @@ const connectWithConnector = async config => {
   return pool;
 };
 
-const readDatabase = async (query) => {
+const readDatabase = async (query, parameters) => {
   const connection = await pool.getConnection();
   console.log("Successfully connected to the database");
   try {
-    const [rows] = await connection.execute(query);
+    const [rows] = parameters ? await connection.execute(query, parameters) : await connection.execute(query);
     console.log("Query successful. Found: ", rows.length);
     return rows;
   } catch (err) {
@@ -408,6 +423,47 @@ app.post("/api/members/assigned", async (req, res) => {
     res.status(500).json({ error: err.message || String(err) });
   }
 });
+
+app.post("/api/members/login", async (req, res) => {
+  try {
+    const { uid } = req.body;
+    const member = await readDatabase(`SELECT member_id FROM member WHERE firebase_uid = ?`, [uid]);
+    if (member.length === 0) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+    const memberId = member[0].member_id;
+    res.json({ memberId: memberId });
+  } catch (err) {
+    console.error("Failed to log in member:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
+/* 
+  THIS CAN BE USED FOR KEEPING NOTE OF THE CURRENT USER LOGGED IN 
+  THIS CAN BE ACCESSED WITH req.user.uid IN THE ENDPOINTS BELOW FOR UNIQUE ID
+  
+  --- BACKEND ENDPOINT ---
+  const { uid } = req.user;
+  
+  --- FRONTEND ---
+  const user = useUser();
+
+  const token = user && await user.getIdToken();
+  const headers = token ? { authToken: token } : {};
+  *add headers to endpoint requests* 
+*/
+
+// app.use(async function(req, res, next) {
+//   const { authToken } = req.headers;
+//   if (authToken) {
+//     const user = await admin.auth().verifyIdToken(authToken);
+//     req.user = user;
+//     next(); // Proceed to the following endpoints with the authenticated user
+//   } else {
+//     res.sendStatus(400);
+//   }
+// })
 
 const PORT = process.env.PORT || 4000;
 await connectWithConnector({});

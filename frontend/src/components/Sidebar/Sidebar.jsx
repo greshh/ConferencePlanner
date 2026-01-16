@@ -1,11 +1,15 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+import useUser from "../../hooks/useUser";
 import "./style.css";
 
 export const Sidebar = (user) => {
+  // const { isLoading, user } = useUser();
+
   return (
     <div className='sidebar'>
-      <div className='link' onClick={() => { window.location.href = "/tasks"; }}>
-        <p>Task List</p>
+      <div className='link'>
+        <Link to="/tasks"><p>Task List</p></Link>
       </div>
       {user != null ? (
         <div className="user">
