@@ -7,6 +7,7 @@ import { Loading } from "../../components/Loading";
 import { TaskDetails } from "./TaskDetails/TaskDetails";
 import { EditTask } from "./EditTask/EditTask";
 import { AddTask } from "./AddTask/AddTask";
+import { useNavigate } from "react-router-dom";
 import "./style.css";
 
 export const TaskList = ({ memberId, development }) => {
@@ -25,6 +26,8 @@ export const TaskList = ({ memberId, development }) => {
   const [selectedTaskId, selectTaskId] = useState(null);
   const [rightPanel, setPanel] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+
+  const navigate = useNavigate();
 
   const fetchTasks = async () => {
     try {
@@ -76,6 +79,10 @@ export const TaskList = ({ memberId, development }) => {
       }
     }
 
+    if (memberId == null) {
+      navigate("/");
+      return;
+    }
     USER_LOGIN && getUser();
     fetchTasks();
     window.addEventListener("scroll", () => {

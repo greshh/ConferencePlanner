@@ -374,6 +374,31 @@ app.delete("/api/tasks/delete/:id", async (req, res) => {
   }
 });
 
+app.delete("/api/tasks/attachments/delete/:task_id&:attachment_index", async (req, res) => {
+  const task_id = Number(req.params.task_id);
+  const attachment_index = Number(req.params.attachment_index);
+  try {
+    const attachmentRows = await readDatabase(`SELECT attachments from task WHERE task_id = ${task_id}`, null);
+    const attachments = attachmentRows[0].attachments;
+    console.log(attachments);
+    const selectedAttachment = attachments[attachment_index];
+
+    // Removing the attachment from the attachments array.
+    const newAttachments = [];
+    attachments.forEach(element => {
+      if (element !== selectedAttachment) {
+        newAttachments.push(element);
+      }
+    });
+    
+    const deleted = await updateDatabase(`UPDATE task SET attachments = ? WHERE task_id = ${task_id}`, [JSON.stringify(newAttachments)]);
+    res.json(deleted);
+  } catch (err) {
+    console.error("Failed to delete attachment:", err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
 // ------------------------ POST REQUESTS ------------------------
 
 app.post("/api/tasks/post", async (req, res) => {

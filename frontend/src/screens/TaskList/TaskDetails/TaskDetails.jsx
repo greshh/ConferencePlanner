@@ -13,7 +13,8 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
   const [user, setUser] = useState(null);
   const [notes, setNotes] = useState([]);
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
-  const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete, 2 = Link, 3 = File
+  const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete Task, 2 = Link, 3 = File, 4 = Delete Attachment
+  const [currentAttachment, setCurrentAttachment] = useState(-1);
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -127,9 +128,25 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       task.attachments.map((a, index) => (
                         <p key={index}>
                           {a.type == "link" ? (
-                            <img src="./icons/attachments/Link.svg"/>
+                            <img 
+                              src="./icons/attachments/Link.svg"
+                              style={{ cursor: "pointer" }}
+                              title="Delete link?"
+                              onClick={()=>{
+                                setCurrentAttachment(index);
+                                setShowPopup(4);
+                              }}
+                            />
                           ) : (
-                            <img src="./icons/attachments/File.svg"/>
+                            <img 
+                              src="./icons/attachments/File.svg"
+                              style={{ cursor: "pointer" }}
+                              title="Delete file?"
+                              onClick={()=>{
+                                setCurrentAttachment(index);
+                                setShowPopup(4);
+                              }}
+                            />
                           )}
                           <a href={a.link} target="_blank" rel="noopener noreferrer">{a.name ? a.name : parse(a.link).domain}</a>
                         </p>
@@ -351,6 +368,38 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Cancel",
                   onClick: () => { setShowPopup(0); }
+                }
+              ]}
+            />
+          </div>
+        )}
+        {showPopup == 4 && currentAttachment != -1 && (
+          <div className="popup-backdrop">
+            <PopUp 
+              message="Are you sure you want to delete this attachment?" 
+              options={[
+                {
+                  label: "Yes, I'm sure",
+                  onClick: async () => {
+                    const res = await fetch(`${api_base}/api/tasks/attachments/delete/${task.task_id}&${currentAttachment}`, {
+                      method: "DELETE",
+                    });
+                    if (!res.ok) {
+                      console.error(`Failed to delete attachment: HTTP ${res.status}`);
+                      setCurrentAttachment(-1);
+                      setShowPopup(0);
+                      return;
+                    }
+                    fetchTasks();
+                    setShowPopup(0);
+                  }
+                },
+                {
+                  label: "Cancel",
+                  onClick: () => { 
+                    setCurrentAttachment(-1);
+                    setShowPopup(0); 
+                  }
                 }
               ]}
             />
