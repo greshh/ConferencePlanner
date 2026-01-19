@@ -10,7 +10,7 @@ import { AddTask } from "./AddTask/AddTask";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 
-export const TaskList = ({ memberId, development }) => {
+export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
 
   /* USER_LOGIN is set to FALSE for development purposes.
      Upon deployment, the user should only see their own tasks and personal notes is used. 
@@ -31,7 +31,7 @@ export const TaskList = ({ memberId, development }) => {
 
   const fetchTasks = async () => {
     try {
-      const res = USER_LOGIN ? await fetch(`${api_base}/api/tasks/${memberId}`) : await fetch(`${api_base}/api/tasks`);
+      const res = USER_LOGIN ? await fetch(`${api_base}/api/tasks/${memberId || cookies['memberId']}`) : await fetch(`${api_base}/api/tasks`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
@@ -69,7 +69,7 @@ export const TaskList = ({ memberId, development }) => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await fetch(`${api_base}/api/members/${memberId}`);
+        const res = await fetch(`${api_base}/api/members/${effectiveMemberId}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -79,10 +79,11 @@ export const TaskList = ({ memberId, development }) => {
       }
     }
 
-    if (memberId == null) {
+    if (!memberId && !cookies['memberId']) {
       navigate("/");
       return;
     }
+    const effectiveMemberId = memberId || cookies['memberId'];
     USER_LOGIN && getUser();
     fetchTasks();
     window.addEventListener("scroll", () => {
@@ -103,7 +104,7 @@ export const TaskList = ({ memberId, development }) => {
         <div className="my-tasks">MY TASKS</div>
       </div>
       { !USER_LOGIN || (USER_LOGIN && user != null) ? (
-        <Sidebar user={user} />
+        <Sidebar user={user} removeCookie={removeCookie} />
       ) : (
         <div className="loading-sidebar"/>
       )}
@@ -142,9 +143,9 @@ export const TaskList = ({ memberId, development }) => {
           {
             {
               0: <div/>,
-              1: tasks && selectedTaskId && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={memberId} USER_LOGIN={USER_LOGIN} development={development} />,
-              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} setTasks={setTasks} development={development} memberId={memberId} USER_LOGIN={USER_LOGIN} />,
-              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={memberId} USER_LOGIN={USER_LOGIN} />
+              1: tasks && selectedTaskId && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={memberId || cookies['memberId']} USER_LOGIN={USER_LOGIN} development={development} />,
+              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} setTasks={setTasks} development={development} memberId={memberId || cookies['memberId']} USER_LOGIN={USER_LOGIN} />,
+              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={memberId || cookies['memberId']} USER_LOGIN={USER_LOGIN} />
             } [rightPanel]
           }
         </div>

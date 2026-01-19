@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { parse } from "tldts";
 import { loadAssigned } from "../../../hooks/loadAssigned";
 import { Loading } from "../../../components/Loading";
 import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
@@ -6,7 +7,6 @@ import "./style.css";
 import { PopUp } from "../../../components/PopUp/PopUp";
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import { AttachmentDropdown } from "../../../components/AttachmentDropdown";
-import { parse } from "tldts";
 
 export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN, development }) => {
   const [currentTask, setCurrentTask] = useState(null);

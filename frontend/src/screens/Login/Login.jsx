@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "./style.css";
 
-export const Login = ({ setUser, development }) => {
+export const Login = ({ setUser, setCookie, development }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -25,6 +25,8 @@ export const Login = ({ setUser, development }) => {
           });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
+          // Set cookie for the current user to stay logged in for 24 hours.
+          setCookie("memberId", data.memberId, {path: "/", maxAge: 86400});
           setUser(data.memberId);
           navigate("/tasks");
         } catch (err) {

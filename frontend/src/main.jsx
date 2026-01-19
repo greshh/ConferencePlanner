@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'   
+import { CookiesProvider } from 'react-cookie';
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
@@ -17,6 +18,8 @@ const app = initializeApp(firebaseConfig);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+      <App />
+    </CookiesProvider>
   </React.StrictMode>,
 )
