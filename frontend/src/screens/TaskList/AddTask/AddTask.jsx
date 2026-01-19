@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
 import "./style.css";
 
-export const AddTask = ({ setPanel, selectTaskId, setTasks }) => {
+export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberId, USER_LOGIN }) => {
+  const api_base = development ? "http://localhost:4000" : "";
 
   const createTask = async () => {
     const task_name = document.getElementById("task-name").value;
@@ -10,7 +10,7 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks }) => {
     const description = document.getElementById("description").value;
 
     try {
-      const res = await fetch(`http://localhost:3000/create-task/`, {
+      const res = await fetch(`${api_base}/api/tasks/post`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_name, due_date, description }),
@@ -23,6 +23,22 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks }) => {
       console.error("Failed to update task completed:", err);
     }
   };
+
+  const assignMember = async (taskId, memberId) => {
+    try {
+      const res = await fetch(`${api_base}/api/assignments/patch`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_id: taskId, member_id: memberId }),
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      return res.json();
+    } catch (err) {
+      console.error("Failed to assign current member to task:", err);
+    }
+  }
 
   return (
     <div>
@@ -66,9 +82,12 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks }) => {
                         return;
                       }
                       const newTask = await createTask();
-                      const refreshedTask = await fetch(`http://localhost:3000/task/${newTask.task_id}`).then(res => res.json());
+                      if (memberId) await assignMember(newTask.insertId, memberId);
+                      const refreshedTask = await fetch(`${api_base}/api/tasks/get/${newTask.insertId}`).then(res => res.json());
                       selectTaskId(refreshedTask.task_id);
-                      const refreshedTasks = await fetch("http://localhost:3000/tasks").then(res => res.json());
+                      const refreshedTasks = USER_LOGIN ? 
+                        await fetch(`${api_base}/api/tasks/${memberId}`).then(res => res.json()) : 
+                        await fetch(`${api_base}/api/tasks`).then(res => res.json());
                       setTasks(refreshedTasks);
                       setPanel(1); 
                     }}>Save</button>

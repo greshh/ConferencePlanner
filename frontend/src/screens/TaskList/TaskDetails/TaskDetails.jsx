@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { parse } from "tldts";
 import { loadAssigned } from "../../../hooks/loadAssigned";
 import { Loading } from "../../../components/Loading";
 import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
@@ -6,19 +7,22 @@ import "./style.css";
 import { PopUp } from "../../../components/PopUp/PopUp";
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import { AttachmentDropdown } from "../../../components/AttachmentDropdown";
-import { parse } from "tldts";
 
-export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN }) => {
+export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN, development }) => {
+  const [currentTask, setCurrentTask] = useState(null);
   const [user, setUser] = useState(null);
   const [notes, setNotes] = useState([]);
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
-  const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete, 2 = Link, 3 = File
+  const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete Task, 2 = Link, 3 = File, 4 = Delete Attachment
+  const [currentAttachment, setCurrentAttachment] = useState(-1);
+
+  const api_base = development ? "http://localhost:4000" : "";
 
   const updateNotes = async () => {
     const newNote = document.getElementById("notes").value;
 
     try {
-      const res = await fetch(`http://localhost:3000/update-notes/${notes.assignment_id}`, {
+      const res = await fetch(`${api_base}/api/assignments/notes/patch/${notes.assignment_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personal_notes: newNote }),
@@ -33,12 +37,12 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
   useEffect(() => {
     const fetchAssigned = async () => {
-      const data = await loadAssigned(task.task_id);
-      setAssignment(data);
+      const data = await loadAssigned(task.task_id, development);
+      setAssignment(data);  
     }
     const getUser = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/member/${memberId.memberId}`);
+        const res = await fetch(`${api_base}/api/members/${memberId}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -48,7 +52,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
       }
     }
     const fetchNotes = async () => {
-      const res = await fetch(`http://localhost:3000/notes/${task.task_id}/${memberId.memberId}`);
+      const res = await fetch(`${api_base}/api/assignments/notes/get/${task.task_id}&${memberId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const notes = Array.isArray(data) ? data[0] : [];
@@ -102,12 +106,13 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                         task={task}
                         assignment={assignment}
                         setAssignment={setAssignment}
+                        development={development}
                       />
                     }
                   </div>
                   {assignment.committees && assignment.committees.map((c) => (
-                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
-                      {c.committee.committee_name}
+                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.colour }}>
+                      {c.committee_name}
                     </span> 
                   ))}
                 </div>
@@ -123,9 +128,25 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       task.attachments.map((a, index) => (
                         <p key={index}>
                           {a.type == "link" ? (
-                            <img src="./icons/attachments/Link.svg"/>
+                            <img 
+                              src="./icons/attachments/Link.svg"
+                              style={{ cursor: "pointer" }}
+                              title="Delete link?"
+                              onClick={()=>{
+                                setCurrentAttachment(index);
+                                setShowPopup(4);
+                              }}
+                            />
                           ) : (
-                            <img src="./icons/attachments/File.svg"/>
+                            <img 
+                              src="./icons/attachments/File.svg"
+                              style={{ cursor: "pointer" }}
+                              title="Delete file?"
+                              onClick={()=>{
+                                setCurrentAttachment(index);
+                                setShowPopup(4);
+                              }}
+                            />
                           )}
                           <a href={a.link} target="_blank" rel="noopener noreferrer">{a.name ? a.name : parse(a.link).domain}</a>
                         </p>
@@ -166,17 +187,24 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     assignment.members.map(m => (
                       <img
                         key={m.assignment_id}
-                        src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member.member_id}.jpg`}
+                        src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member_id}.jpg`}
                         className="avatar"
-                        alt={m.member.first_name}
-                        title={`${m.member.first_name} ${m.member.last_name}`}
+                        alt={m.first_name}
+                        title={`${m.first_name} ${m.last_name}`}
                         onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                       />
                     )
                   )) : (
                     <div/>
                   )}
-                  {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && <MemberDropdown task={task} assignment={assignment} setAssignment={setAssignment} />}
+                  {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && 
+                    <MemberDropdown 
+                      task={task} 
+                      assignment={assignment} 
+                      setAssignment={setAssignment}
+                      development={development} 
+                    />
+                  }
                 </div>
               </div>
               {(USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN ? (
@@ -201,7 +229,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Yes, I'm sure",
                   onClick: async () => {
-                    const res = await fetch(`http://localhost:3000/delete-task/${task.task_id}`, {
+                    const res = await fetch(`${api_base}/api/tasks/delete/${task.task_id}`, {
                       method: "DELETE",
                     });
                     if (!res.ok) {
@@ -239,7 +267,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       }
                       
                       try {
-                        const link = await fetch("http://localhost:3000/get-url", {
+                        const link = await fetch(`${api_base}/api/url`, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ url: inputLink })
@@ -263,7 +291,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
                         task.attachments.push(newLink);
   
-                        await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+                        await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
@@ -306,26 +334,26 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       data.append("file", inputFile);
 
                       try {
-                        await fetch(`http://localhost:3000/upload-file`, {
+                        const res = await fetch(`${api_base}/api/upload-file`, {
                           method: "PATCH",
                           body: data
                         });
 
+                        const body = await res.json();
+
                         const newFile = {
                           type: "file",
-                          link: `https://storage.googleapis.com/conference_planner_attachments/${task.task_id}/${fileName}`,
-                          name: fileName
+                          link: body.file_url,
+                          name: body.file_name
                         };
 
                         if (!task.attachments) {
                           task.attachments = [];
                         }
 
-                        console.log(task.attachments);
                         task.attachments.push(newFile);
-                        console.log(task.attachments);
 
-                        await fetch(`http://localhost:3000/update-task/${task.task_id}`, {
+                        await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
@@ -340,6 +368,38 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Cancel",
                   onClick: () => { setShowPopup(0); }
+                }
+              ]}
+            />
+          </div>
+        )}
+        {showPopup == 4 && currentAttachment != -1 && (
+          <div className="popup-backdrop">
+            <PopUp 
+              message="Are you sure you want to delete this attachment?" 
+              options={[
+                {
+                  label: "Yes, I'm sure",
+                  onClick: async () => {
+                    const res = await fetch(`${api_base}/api/tasks/attachments/delete/${task.task_id}&${currentAttachment}`, {
+                      method: "DELETE",
+                    });
+                    if (!res.ok) {
+                      console.error(`Failed to delete attachment: HTTP ${res.status}`);
+                      setCurrentAttachment(-1);
+                      setShowPopup(0);
+                      return;
+                    }
+                    fetchTasks();
+                    setShowPopup(0);
+                  }
+                },
+                {
+                  label: "Cancel",
+                  onClick: () => { 
+                    setCurrentAttachment(-1);
+                    setShowPopup(0); 
+                  }
                 }
               ]}
             />

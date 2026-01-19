@@ -8,7 +8,7 @@ export const Header = () => {
         <img
         className="image"
         alt="Image"
-        src="/icons/header/yfc-logo.png"
+        src="./icons/header/yfc-logo.png"
         />
       </div>
       <div></div>
