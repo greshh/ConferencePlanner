@@ -10,12 +10,7 @@ import { AddTask } from "./AddTask/AddTask";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 
-export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
-
-  /* USER_LOGIN is set to FALSE for development purposes.
-     Upon deployment, the user should only see their own tasks and personal notes is used. 
-     Upon development, all the tasks can be seen and personal notes is disabled.*/
-  const USER_LOGIN = true;
+export const TaskList = ({ memberId, cookies, removeCookie, development, userLogin }) => {
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -31,7 +26,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
 
   const fetchTasks = async () => {
     try {
-      const res = USER_LOGIN ? await fetch(`${api_base}/api/tasks/${memberId || cookies['memberId']}`) : await fetch(`${api_base}/api/tasks`);
+      const res = userLogin ? await fetch(`${api_base}/api/tasks/${memberId || cookies['memberId']}`) : await fetch(`${api_base}/api/tasks`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
@@ -69,7 +64,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await fetch(`${api_base}/api/members/${effectiveMemberId}`);
+        const res = await fetch(`${api_base}/api/members/${memberId || cookies['memberId']}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -79,12 +74,11 @@ export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
       }
     }
 
-    if (!memberId && !cookies['memberId']) {
+    if (userLogin && !memberId && !cookies['memberId']) {
       navigate("/");
       return;
     }
-    const effectiveMemberId = memberId || cookies['memberId'];
-    USER_LOGIN && getUser();
+    userLogin && getUser();
     fetchTasks();
     window.addEventListener("scroll", () => {
       if (window.pageYOffset > 0) {
@@ -103,8 +97,8 @@ export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
       <div className="task-heading" style={{ boxShadow: scrolled ? '0 8px 12px -10px rgba(0, 0, 0, 0.3)' : 'none' }}>
         <div className="my-tasks">MY TASKS</div>
       </div>
-      { !USER_LOGIN || (USER_LOGIN && user != null) ? (
-        <Sidebar user={user} removeCookie={removeCookie} />
+      { !userLogin || (userLogin && user != null) ? (
+        <Sidebar isGuest={!userLogin} user={user} removeCookie={removeCookie} />
       ) : (
         <div className="loading-sidebar"/>
       )}
@@ -131,7 +125,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
                       cursor: 'pointer'
                     }}
                   >
-                    <TaskBubble task={t} onToggleComplete={onToggleComplete} />
+                    <TaskBubble task={t} onToggleComplete={onToggleComplete} isGuest={!userLogin} />
                   </div>
                 );
               })
@@ -143,16 +137,16 @@ export const TaskList = ({ memberId, cookies, removeCookie, development }) => {
           {
             {
               0: <div/>,
-              1: tasks && selectedTaskId && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={memberId || cookies['memberId']} USER_LOGIN={USER_LOGIN} development={development} />,
-              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} setTasks={setTasks} development={development} memberId={memberId || cookies['memberId']} USER_LOGIN={USER_LOGIN} />,
-              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={memberId || cookies['memberId']} USER_LOGIN={USER_LOGIN} />
+              1: tasks && selectedTaskId && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={userLogin ? memberId || cookies['memberId'] : null} userLogin={userLogin} development={development} />,
+              2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} setTasks={setTasks} development={development} memberId={userLogin ? memberId || cookies['memberId'] : null} userLogin={userLogin} />,
+              3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={userLogin ? memberId || cookies['memberId'] : null} userLogin={userLogin} />
             } [rightPanel]
           }
         </div>
       </div>
 
       <div className="add-a-task-panel">
-        {user != null && user.is_committee_head == 1 && <AddATask setPanel={setPanel} />}
+        {(userLogin && user != null && user.is_committee_head == 1) && <AddATask setPanel={setPanel} />}
       </div>
     </div>
   );

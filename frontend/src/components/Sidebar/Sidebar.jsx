@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import "./style.css";
 
-export const Sidebar = ({ user, removeCookie }) => {
+export const Sidebar = ({ isGuest, user, removeCookie }) => {
   const auth = getAuth();
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ export const Sidebar = ({ user, removeCookie }) => {
       <div className='link'>
         <Link to="/tasks"><p>Task List</p></Link>
       </div>
-      {user != null ? (
+      {!isGuest && user != null ? (
         <div className="user">
           <img
             src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${user.member_id}.jpg`}
@@ -32,7 +32,9 @@ export const Sidebar = ({ user, removeCookie }) => {
           <p>{user.first_name} {user.last_name}</p>
         </div>
       ) : (
-        <div/>
+          <Link to={"/"} style={{ fontWeight: "bold", fontStyle: "italic", paddingLeft: "1vw", color: "black" }} className="user">
+              Log In
+          </Link>
       )}
     </div>
   );

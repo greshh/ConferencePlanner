@@ -8,7 +8,7 @@ import { PopUp } from "../../../components/PopUp/PopUp";
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import { AttachmentDropdown } from "../../../components/AttachmentDropdown";
 
-export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, USER_LOGIN, development }) => {
+export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId, userLogin, development }) => {
   const [currentTask, setCurrentTask] = useState(null);
   const [user, setUser] = useState(null);
   const [notes, setNotes] = useState([]);
@@ -58,15 +58,15 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
       const notes = Array.isArray(data) ? data[0] : [];
       setNotes(notes);
     }
-    USER_LOGIN && getUser();
-    USER_LOGIN && fetchNotes();
+    userLogin && getUser();
+    userLogin && fetchNotes();
     fetchAssigned();
   }, [task]);
 
   if (assignment.error) return <p>Error: {assignment.error}</p>;
 
   return (
-    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null && assignment.members != null && assignment.committees != null && (!USER_LOGIN || (user != null && notes != null)) ? (
+    task != null && task.task_name != null && task.completed != null && task.due_date != null && task.description != null && assignment.members != null && assignment.committees != null && (!userLogin || (user != null && notes != null)) ? (
       <div>
         <div className="task-selected">
           <div className="current-task">
@@ -101,7 +101,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 <div style={{ marginBottom: '2rem' }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                     <h3>COMMITTEES</h3>
-                    {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && 
+                    {(userLogin && user.is_committee_head == 1) && 
                       <CommitteeDropdown
                         task={task}
                         assignment={assignment}
@@ -119,7 +119,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 <div style={{ marginBottom: '2rem'}}>
                   <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
                     <h3 style={{ marginBottom: '0.5rem' }}>ATTACHMENTS</h3>
-                    {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && 
+                    {(userLogin && user.is_committee_head == 1) && 
                       <AttachmentDropdown setShowPopup={setShowPopup} />
                     } 
                   </div>
@@ -159,7 +159,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 <div style={{ marginBottom: '1.5rem'}}>
                   <h3 style={{ marginBottom: '0' }}>NOTES</h3>
                   <p style={{ fontStyle: 'italic', marginTop: '0', marginBottom: '0.5rem' }}>(For personal reference only)</p>
-                  {USER_LOGIN ? (
+                  {userLogin ? (
                       <textarea
                         id="notes"
                         defaultValue={notes != null && notes.personal_notes != null ? notes.personal_notes : ""}
@@ -197,7 +197,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   )) : (
                     <div/>
                   )}
-                  {((USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN) && 
+                  {(userLogin && user.is_committee_head == 1) && 
                     <MemberDropdown 
                       task={task} 
                       assignment={assignment} 
@@ -207,7 +207,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   }
                 </div>
               </div>
-              {(USER_LOGIN && user.is_committee_head == 1) || !USER_LOGIN ? (
+              {(userLogin && user.is_committee_head == 1) ? (
                 <div style={{display: 'flex', gap: '0.5rem'}}>
                   <button onClick={() => setPanel(2)}>Edit</button>
                   <button onClick={() => setShowPopup(1)}>Delete</button>
