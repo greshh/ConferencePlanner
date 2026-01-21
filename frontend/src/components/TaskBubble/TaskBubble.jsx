@@ -1,18 +1,17 @@
 import React from "react";
 import "./style.css";
 
-export const TaskBubble = ({ task, onToggleComplete }) => {
+export const TaskBubble = ({ task, onToggleComplete, isGuest }) => {
   return (
     task != null && task.task_name != null && task.completed != null ? (
       <div className={`task-bubble`}>
         <div className="checkbox">
           <div
             className={task.completed ? "check-checked" : "check-unchecked"}
-            onClick={async () => await onToggleComplete(task.task_id)}
+            onClick={async () => {if (!isGuest)  await onToggleComplete(task.task_id);}}
             role="checkbox"
             aria-checked={task.completed}
             tabIndex={0}
-            onKeyDown={async (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); await onToggleComplete(task.task_id); } }}
             style={{ cursor: 'pointer' }}
           />
         </div>

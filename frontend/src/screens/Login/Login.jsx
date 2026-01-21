@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "./style.css";
 
-export const Login = ({ setUser, setCookie, development }) => {
+export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -17,6 +17,7 @@ export const Login = ({ setUser, setCookie, development }) => {
       await signInWithEmailAndPassword(getAuth(), email, password).then(async (userCredential) => {
         setMessage("Success! Logging in.");
         const user = userCredential.user;
+        setIsGuest(false);
         try {
           const res = await fetch(`${api_base}/api/members/login`, {
             method: 'POST',
@@ -65,7 +66,13 @@ export const Login = ({ setUser, setCookie, development }) => {
           </div>
         </div>
         <button onClick={logIn}>Log In</button>
-      </div>
+        <Link 
+          onClick={()=>setIsGuest(true)} 
+          to={"/tasks"}
+          className="guest-link"
+          style={{ color: "#3b3b3b" }}
+        >Continue as guest...</Link>
+      </div>      
     </div>
   );
 };

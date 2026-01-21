@@ -25,6 +25,12 @@ body {
   transition: box-shadow 0.5s ease;
 }
 
+.guest-link {
+  font-style: italic;
+  font-size: small;
+  /* font-weight: 600; */
+}
+
 input {
   width: 26vw;
   padding: 5px;
