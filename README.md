@@ -8,6 +8,9 @@ This platform is built with a React + Vite frontend, Express.js backend for API 
 - **Task List** - Add, edit, delete tasks, assign members and committees, attach files and links, mark tasks complete
 
 ## User & Techincal Manual
-*(Technical manual is still incomplete!)*
-
 Click here: [Google Drive](https://docs.google.com/document/d/1v2e3fIhM6KM30S5cfCp1gpxPsXA5bGL4RyVZB91J5YQ/edit?usp=sharing)
+
+## Branches
+**main**: The current version deployed.
+
+**development**: The current version developed; not necessarily deployed.
