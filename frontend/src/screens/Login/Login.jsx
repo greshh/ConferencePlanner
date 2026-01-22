@@ -12,7 +12,8 @@ export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
 
   const navigate = useNavigate();
 
-  async function logIn() {
+  async function logIn(event) {
+    event.preventDefault();
     try {
       await signInWithEmailAndPassword(getAuth(), email, password).then(async (userCredential) => {
         setMessage("Success! Logging in.");
@@ -41,38 +42,40 @@ export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" , justifyContent: "center", height: "100vh"}}>
-      <div className="login-container">
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <img src="./icons/login/YFC-9FCBE3.png" alt="YFC logo" style={{ height: "80px" }} />
-          { message && <p style={{ fontStyle: "italic", fontSize: "13px", color: "grey" }}>{message}</p> }
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            { email && <label>{("Email address").toUpperCase()}</label> }
-            <input 
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+      <form onSubmit={(e)=>logIn(e)}>
+        <div className="login-container">
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <img src="./icons/login/YFC-9FCBE3.png" alt="YFC logo" style={{ height: "80px" }} />
+            { message && <p style={{ fontStyle: "italic", fontSize: "13px", color: "grey" }}>{message}</p> }
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            { password && <label>{("Password").toUpperCase()}</label> }
-            <input 
-              placeholder="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              { email && <label>{("Email address").toUpperCase()}</label> }
+              <input 
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              { password && <label>{("Password").toUpperCase()}</label> }
+              <input 
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
-        <button onClick={logIn}>Log In</button>
-        <Link 
-          onClick={()=>setIsGuest(true)} 
-          to={"/tasks"}
-          className="guest-link"
-          style={{ color: "#3b3b3b" }}
-        >Continue as guest...</Link>
-      </div>      
+          <button type="submit">Log In</button>
+          <Link 
+            onClick={()=>setIsGuest(true)} 
+            to={"/tasks"}
+            className="guest-link"
+            style={{ color: "#3b3b3b" }}
+          >Continue as guest...</Link>
+        </div>    
+      </form>  
     </div>
   );
 };

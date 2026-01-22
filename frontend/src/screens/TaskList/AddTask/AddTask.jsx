@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./style.css";
 
-export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberId, USER_LOGIN }) => {
+export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberId, userLogin }) => {
   const api_base = development ? "http://localhost:4000" : "";
 
   const createTask = async () => {
@@ -85,7 +85,7 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberI
                       if (memberId) await assignMember(newTask.insertId, memberId);
                       const refreshedTask = await fetch(`${api_base}/api/tasks/get/${newTask.insertId}`).then(res => res.json());
                       selectTaskId(refreshedTask.task_id);
-                      const refreshedTasks = USER_LOGIN ? 
+                      const refreshedTasks = userLogin ? 
                         await fetch(`${api_base}/api/tasks/${memberId}`).then(res => res.json()) : 
                         await fetch(`${api_base}/api/tasks`).then(res => res.json());
                       setTasks(refreshedTasks);

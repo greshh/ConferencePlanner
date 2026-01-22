@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./style.css";
 
-export const PopUp = ({ message, options, inputText, inputFile }) => {
+export const PopUp = ({ message, options, inputText, inputFile, cancelOnClick }) => {
+  
+  useEffect(()=>{
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        cancelOnClick();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+  });
+
   return (
     <div className="popup-overlay">
       <div className="popup-content">
@@ -23,7 +33,7 @@ export const PopUp = ({ message, options, inputText, inputFile }) => {
           {inputFile ? (
             <div className="attachment-input">
               <p>File</p> 
-              <input type="file" id="file" />
+              <input type="file" id="file" data-testid="file-input" />
               <p>Name</p> 
               <input type="text" id="attachment-name" />
             </div>

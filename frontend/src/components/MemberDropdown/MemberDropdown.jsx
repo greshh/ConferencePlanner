@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { loadAssigned } from "../../hooks/loadAssigned";
 import "./style.css";
 
@@ -6,6 +6,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment, development } 
   const [memberListOpen, setMemberListOpen] = useState(false);
   const [committeeMembers, setCommitteeMembers] = useState([]); // Array by committee then by members
   const [saving, setSaving] = useState(false);
+  const ref = useRef(null);
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -57,15 +58,24 @@ export const MemberDropdown = ({ task, assignment, setAssignment, development } 
       setSaving(false);
       return newValue;
     }
-  };
+  };  
+
+  useEffect(()=>{
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setMemberListOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+  })
 
   return (
-    <div className="member-dropdown" style={{position: "relative"}}>  
+    <div className="member-dropdown" ref={ref} style={{position: "relative"}}>  
       <img onClick={async () => {
         toggleMemberList(memberListOpen); 
         await fetchCommitteeMembers(assignment); 
-        // await fetchCommitteeHeads(assignment); // UNCOMMENT IF COMMITTEE HEADS ARE TO BE DISPLAYED - see 10/12/2025
-      }} src={'./icons/edit-task/AddAssigned.svg'} className="add-assigned"></img>
+      }} src={'./icons/edit-task/AddAssigned.svg'} className="add-assigned"
+      data-testid="member-dropdown-button"></img>
       <div className="member-content" style={{ display: memberListOpen ? "block" : "none" }}>
         {/* Add all committee members for the selected committees */}
         {committeeMembers.map((committee) => 

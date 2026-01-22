@@ -246,6 +246,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: () => { setShowPopup(0); }
                 }
               ]}
+              cancelOnClick={()=>setShowPopup(0)}
             />
           </div>
         )}
@@ -308,6 +309,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: () => { setShowPopup(0); }
                 }
               ]}
+              cancelOnClick={()=>{setShowPopup(0)}}
             />
           </div>
         )}
@@ -370,6 +372,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: () => { setShowPopup(0); }
                 }
               ]}
+              cancelOnClick={()=>{setShowPopup(0)}}
             />
           </div>
         )}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { loadAssigned } from "../../hooks/loadAssigned";
 import "./style.css";
 
@@ -6,6 +6,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment, development
   const [committees, setCommittees] = useState([]);
   const [committeeListOpen, setCommitteeListOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const ref = useRef(null);
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -71,8 +72,17 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment, development
     }
   };
 
+  useEffect(()=>{
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setCommitteeListOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+  })
+
   return (
-    <div className="committee-dropdown" style={{position: "relative"}}>  
+    <div className="committee-dropdown" ref={ref} style={{position: "relative"}}>  
       <img onClick={async () => {
         toggleMemberList(committeeListOpen); 
         setCommittees(await fetchCommittees()); 

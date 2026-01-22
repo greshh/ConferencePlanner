@@ -4,7 +4,7 @@ import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdow
 import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import "./style.css";
 
-export const EditTask = ({ task, setPanel, setTasks, development, memberId, USER_LOGIN}) => {
+export const EditTask = ({ task, setPanel, setTasks, development, memberId, userLogin}) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
 
   const api_base = development ? "http://localhost:4000" : "";
@@ -70,46 +70,8 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, USER
                       maxLength="1000"
                       style={{ minWidth: "100%", height: "5rem", marginTop: '1rem', whiteSpace: "pre-wrap" }}
                     ></textarea>
-                    {/* <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
-                      <h3>COMMITTEES</h3>
-                      <CommitteeDropdown
-                        task={task}
-                        assignment={assignment}
-                        setAssignment={setAssignment}
-                        development={development}
-                      />
-                    </div>
-                    {assignment.committees && assignment.committees.map((c) => (
-                      <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.colour }}>
-                        {c.committee_name}
-                      </span> 
-                    ))} */}
                   </div>
                   <div/>
-                  {/* <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
-                    <p style={{ lineHeight: '1px' }}>Assigned:</p>
-                    <div className="avatar-group">
-                      {assignment.members && assignment.members.length > 0 ? (
-                        assignment.members.map(m => (
-                          <img
-                            key={m.assignment_id}
-                            src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member_id}.jpg`}
-                            className="avatar"
-                            alt={m.first_name}
-                            title={`${m.first_name} ${m.last_name}`}
-                            onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference-planner/profile-pic/unknown.jpg"; }}
-                          />
-                        )
-                      )) : (
-                        <div/>
-                      )}
-                      <MemberDropdown 
-                        task={task} 
-                        assignment={assignment} 
-                        setAssignment={setAssignment} 
-                        development={development} />
-                    </div>
-                  </div> */}
                   <div style={{display: 'flex', gap: '1rem'}}>
                     <button type="submit" onClick={async (e) => 
                       { 
@@ -126,7 +88,7 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, USER
                           return;
                         }
                         await updateTask();
-                        const refreshedTasks = USER_LOGIN ? 
+                        const refreshedTasks = userLogin ? 
                           await fetch(`${api_base}/api/tasks/${memberId}`).then(res => res.json()) : 
                           await fetch(`${api_base}/api/tasks`).then(res => res.json());
                         setTasks(refreshedTasks);
