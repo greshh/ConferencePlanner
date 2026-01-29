@@ -10,7 +10,7 @@ export const Sidebar = ({ isGuest, user, removeCookie }) => {
   return (
     <div className='sidebar'>
       <div className='link'>
-        <Link to="/tasks"><p>Task List</p></Link>
+        <Link to="/tasks" data-testid="task-list-link"><p>Task List</p></Link>
       </div>
       {!isGuest && user != null ? (
         <div className="user">
