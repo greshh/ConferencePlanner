@@ -8,6 +8,7 @@ import { TaskDetails } from "./TaskDetails/TaskDetails";
 import { EditTask } from "./EditTask/EditTask";
 import { AddTask } from "./AddTask/AddTask";
 import { useNavigate } from "react-router-dom";
+import noTaskMessages from "../../../noTaskMessages";
 import "./style.css";
 
 export const TaskList = ({ memberId, cookies, removeCookie, development, userLogin }) => {
@@ -22,25 +23,28 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
   const [rightPanel, setPanel] = useState(0);
   const [scrolled, setScrolled] = useState(false);
 
+  const getRandomNoTaskMessage = () => {
+    return noTaskMessages[Math.floor(Math.random() * noTaskMessages.length)].message;
+  };
+
+  const [noTaskMessage, setNoTaskMessage] = useState(getRandomNoTaskMessage());
+
   const navigate = useNavigate();
 
   const fetchTasks = async () => {
     try {
-      const res = userLogin ? await fetch(`${api_base}/api/tasks/${memberId || cookies['memberId']}`) : await fetch(`${api_base}/api/tasks`);
+      const res = userLogin ? await fetch(`${api_base}/api/tasks/${Number(memberId) || Number(cookies['memberId'])}`) : await fetch(`${api_base}/api/tasks`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const task_array = () => {
-        const array = [];
-        if (userLogin && Array.isArray(data)) {
-          data.map((t)=>{
-            array.push(t.task);
-          })
-        } else {
-          array = data;
-        }
-        return array;
-      };
-      setTasks(task_array);
+      let array = [];
+      if (userLogin && Array.isArray(data)) {
+        data.map((t)=>{
+          array.push(t);
+        })
+      } else {
+        array = data;
+      }
+      setTasks(array);
     } catch (err) {
       console.error("Failed to load tasks:", err);
       setError(err.message || "Failed to load tasks");
@@ -53,7 +57,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
     const newValue = !selectedTask.completed;
     setSaving(true);
     try {
-      const res = await fetch(`${api_base}/api/tasks/patch/${selectedTaskId}`, {
+      const res = await fetch(`${api_base}/api/tasks/patch/${Number(selectedTaskId)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ "completed": newValue }),
@@ -75,7 +79,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await fetch(`${api_base}/api/members/${memberId || cookies['memberId']}`);
+        const res = await fetch(`${api_base}/api/members/${Number(memberId) || Number(cookies['memberId'])}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -121,25 +125,31 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
                 <Loading/>
               </div>
             ) : (
-              tasks.map((t) => {
-                return (
-                  <div
-                    key={t.task_id}
-                    onClick={() => {
-                      selectTaskId(t.task_id);
-                      setPanel(1);
-                    }}
-                    style={{
-                      display: `flex`,
-                      marginBottom: `5%`,
-                      justifyContent: `center`,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <TaskBubble task={t} onToggleComplete={onToggleComplete} isGuest={!userLogin} />
-                  </div>
-                );
-              })
+              tasks && tasks.length > 0 ? (
+                tasks.map((t) => {
+                  return (
+                    <div
+                      key={Number(t.task_id)}
+                      onClick={() => {
+                        selectTaskId(t.task_id);
+                        setPanel(1);
+                      }}
+                      style={{
+                        display: `flex`,
+                        marginBottom: `5%`,
+                        justifyContent: `center`,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <TaskBubble task={t} onToggleComplete={onToggleComplete} isGuest={!userLogin} />
+                    </div>
+                  );
+                })
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontStyle: 'italic', fontSize: 'smaller', padding: '0 10%', textAlign: 'center' }}>
+                  {noTaskMessage}
+                </div>
+              )
             )}
           </div>
         </div>

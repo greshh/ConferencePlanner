@@ -14,7 +14,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment, development } 
     const members = [];
     for (const c of assignment.committees) {
       try {
-        const res = await fetch(`${api_base}/api/memberships/${c.committee.committee_id}`);
+        const res = await fetch(`${api_base}/api/memberships/${Number(c.committee.committee_id)}`);
         const data = await res.json();
         members.push(data);
       } catch (err) {
@@ -45,7 +45,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment, development } 
       const res = await fetch(`${api_base}/api/assignments/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: task.task_id, member_id: member.member_id }),
+        body: JSON.stringify({ task_id: Number(task.task_id), member_id: Number(member.member_id) }),
       });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);

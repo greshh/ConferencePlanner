@@ -42,7 +42,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment, development
       const assigned = await fetch(`${api_base}/api/members/assigned`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: task.task_id, committee_id: committee.committee_id }),
+        body: JSON.stringify({ task_id: Number(task.task_id), committee_id: Number(committee.committee_id) }),
       });
       if (!assigned.ok) {
         throw new Error(`HTTP ${assigned.status}`);
@@ -57,7 +57,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment, development
       const res = await fetch(`${api_base}/api/task_committees/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: task.task_id, committee_id: committee.committee_id }),
+        body: JSON.stringify({ task_id: Number(task.task_id), committee_id: Number(committee.committee_id) }),
       });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);

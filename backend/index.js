@@ -35,6 +35,14 @@ const upload = multer({
   },
 });
 
+function bigintToString(obj) {
+  return JSON.parse(
+    JSON.stringify(obj, (_, value) =>
+      typeof value === "bigint" ? value.toString() : value,
+    ),
+  );
+}
+
 const prisma = await getPrisma();
 
 // --------------------------------------------------------------
@@ -114,7 +122,7 @@ app.patch("/api/upload-file", upload.single("file"), async (req, res) => {
 app.get("/api/tasks", async (req, res) => {
   try {
     const tasks = await prisma.task.findMany();
-    res.json(tasks);
+    res.json(bigintToString(tasks));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -130,15 +138,16 @@ app.get("/api/tasks/:member_id", async (req, res) => {
   // res.json(tasks);
 
   try {
-    const tasks = await prisma.assignment.findMany({
+    const assignments = await prisma.assignment.findMany({
       where: {
         member_id: member_id,
       },
-      select: {
-        task: true,
-      },
     });
-    res.json(tasks);
+    const taskIds = assignments.map((a) => a.task_id);
+    const tasks = await prisma.task.findMany({
+      where: { task_id: { in: taskIds } },
+    });
+    res.json(bigintToString(tasks));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -169,7 +178,7 @@ app.get("/api/tasks/get/:task_id", async (req, res) => {
         task_id: task_id,
       },
     });
-    res.json(task);
+    res.json(bigintToString(task));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -188,7 +197,7 @@ app.get("/api/members/:member_id", async (req, res) => {
         member_id: member_id,
       },
     });
-    res.json(member);
+    res.json(bigintToString(member));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -213,16 +222,38 @@ app.get("/api/assignments/:task_id", async (req, res) => {
       },
       select: {
         assignment_id: true,
-        member: {
+        member_id: true,
+        // member: {
+        //   select: {
+        //     member_id: true,
+        //     first_name: true,
+        //     last_name: true,
+        //   },
+        // },
+      },
+    });
+
+    // const memberIds = assignments.map((a) => a.member_id);
+
+    const assignedWithMembers = await Promise.all(
+      assigned.map(async (a) => {
+        const member = await prisma.member.findUnique({
+          where: { member_id: a.member_id },
           select: {
             member_id: true,
             first_name: true,
             last_name: true,
           },
-        },
-      },
-    });
-    res.json(assigned);
+        });
+
+        return {
+          ...a,
+          member,
+        };
+      }),
+    );
+    
+    res.json(bigintToString(assignedWithMembers));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -241,20 +272,33 @@ app.get("/api/memberships/:committee_id", async (req, res) => {
   const committee_id = parseInt(req.params.committee_id);
 
   try {
-    const members = await prisma.membership.findMany({
+    const memberships = await prisma.membership.findMany({
       where: {
         committee_id: committee_id,
       },
+      // select: {
+      //   member: {
+      //     select: {
+      //       member_id: true,
+      //       first_name: true,
+      //       last_name: true,
+      //     },
+      //   },
+      // },
+    });
+
+    const memberIds = memberships.map((m) => m.member_id);
+    const members = await prisma.member.findMany({
+      where: {
+        member_id: { in: memberIds },
+      },
       select: {
-        member: {
-          select: {
-            member_id: true,
-            first_name: true,
-            last_name: true,
-          },
-        },
+        member_id: true,
+        first_name: true,
+        last_name: true,
       },
     });
+
     res.json(members);
   } catch (err) {
     console.error(err);
@@ -280,16 +324,36 @@ app.get("/api/task_committees/:task_id", async (req, res) => {
       },
       select: {
         task_committee_id: true,
-        committee: {
+        committee_id: true,
+        // committee: {
+        //   select: {
+        //     committee_id: true,
+        //     committee_name: true,
+        //     colour: true,
+        //   },
+        // },
+      },
+    });
+
+    const assignedWithCommittee = await Promise.all(
+      assigned_committees.map(async (a) => {
+        const committee = await prisma.committee.findUnique({
+          where: { committee_id: a.committee_id },
           select: {
             committee_id: true,
             committee_name: true,
             colour: true,
           },
-        },
-      },
-    });
-    res.json(assigned_committees);
+        });
+
+        return {
+          ...a,
+          committee,
+        };
+      }),
+    );
+
+    res.json(bigintToString(assignedWithCommittee));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -317,7 +381,7 @@ app.get("/api/assignments/notes/get/:task_id&:member_id", async (req, res) => {
         personal_notes: true,
       },
     });
-    res.json(assignment);
+    res.json(bigintToString(assignment));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -440,7 +504,7 @@ app.patch("/api/assignments/notes/patch/:assignment_id", async (req, res) => {
         personal_notes: personal_notes,
       },
     });
-    res.json(updated);
+    res.json(bigintToString(updated));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
@@ -488,7 +552,7 @@ app.patch("/api/assignments/patch", async (req, res) => {
         },
       });
     }
-    res.json(response);
+    res.json(bigintToString(response));
   } catch (err) {
     console.error("Failed to update assignment:", err);
     res.status(500).json({ error: err.message || String(err) });
@@ -534,7 +598,7 @@ app.patch("/api/task_committees/patch", async (req, res) => {
         });
       }
 
-      res.json(response);
+      res.json(bigintToString(response));
     } catch (err) {
       console.error("Failed to update assignment:", err);
       res.status(500).json({ error: err.message || String(err) });
@@ -561,20 +625,26 @@ app.delete("/api/tasks/delete/:id", async (req, res) => {
         task_id: task_id,
       },
     });
-    const deleteWorkflowTask = prisma.workflow_task.deleteMany({
-      where: {
-        task_id: task_id,
-      },
-    });
+    // const deleteWorkflowTask = prisma.workflow_task.deleteMany({
+    //   where: {
+    //     task_id: task_id,
+    //   },
+    // });
     const deleteTask = prisma.task.delete({
       where: {
         task_id: task_id,
       },
     });
 
-    const transaction = await prisma.$transaction([deleteAssignment, deleteTaskCommittee, deleteWorkflowTask, deleteTask]);
+    // const transaction = await prisma.$transaction([deleteAssignment, deleteTaskCommittee, deleteWorkflowTask, deleteTask]);
 
-    res.json(transaction);
+    const transaction = await prisma.$transaction([
+      deleteAssignment,
+      deleteTaskCommittee,
+      deleteTask,
+    ]);
+
+    res.json(bigintToString(transaction));
   } catch (err) {
     console.error("Failed to delete task:", err);
     res.status(500).json({ error: err.message || String(err) });
@@ -617,7 +687,7 @@ app.delete("/api/tasks/attachments/delete/:task_id&:attachment_index", async (re
         attachments: newAttachments,
       },
     });
-    res.json(attachment);
+    res.json(bigintToString(attachment));
   } catch (err) {
     console.error("Failed to delete attachment:", err);
     res.status(500).json({ error: err.message || String(err) });
@@ -643,7 +713,7 @@ app.post("/api/tasks/post", async (req, res) => {
       },
     });
     
-    res.json(new_task);
+    res.json(bigintToString(new_task));
   } catch (err) {
     console.error("Failed to create task:", err);
     res.status(500).json({ error: err.message || String(err) });
@@ -682,40 +752,46 @@ app.post("/api/members/assigned", async (req, res) => {
     //   },
     // })
 
+    // const members = await prisma.member.findMany({
+    //   where: {
+    //     membership: {
+    //       some: {
+    //         committee_id: parseInt(committee_id),
+    //       },
+    //     },
+    //     assignment: {
+    //       some: {
+    //         task_id: parseInt(task_id),
+    //       }
+    //     }
+    //   },
+    // });
+
+    const memberships = await prisma.membership.findMany({
+      where: {
+        committee_id: parseInt(committee_id),
+      },
+    });
+    const memberIdsFromCommittee = memberships.map((m) => m.member_id);
+
+    const assignments = await prisma.assignment.findMany({
+      where: {
+        task_id: parseInt(task_id),
+      },
+    });
+    const memberIdsFromAssignments = assignments.map((a) => a.member_id);
+
+    const memberIds = memberIdsFromCommittee.filter((id) =>
+      memberIdsFromAssignments.includes(id),
+    );
+
     const members = await prisma.member.findMany({
       where: {
-        // assignment: {
-        //   some: {
-        //     task_id: parseInt(task_id),
-        //     task: {
-        //       assignment: {
-        //         some: {
-        //           member: {
-        //             membership: {
-        //               some: {
-        //                 committee_id: parseInt(committee_id),
-        //               },
-        //             },
-        //           },
-        //         },
-        //       },
-        //     },
-        //   },
-        // },
-        membership: {
-          some: {
-            committee_id: parseInt(committee_id),
-          },
-        },
-        assignment: {
-          some: {
-            task_id: parseInt(task_id),
-          }
-        }
+        id: { in: memberIds },
       },
-    });    
+    });
 
-    res.json(members);
+    res.json(bigintToString(members));
   } catch (err) {
     console.error("Failed to fetch assigned members:", err);
     res.status(500).json({ error: err.message || String(err) });
@@ -739,8 +815,7 @@ app.post("/api/members/login", async (req, res) => {
     if (member.length === 0) {
       return res.status(404).json({ error: "Member not found" });
     }
-    const memberId = member[0].member_id;
-    res.json({ memberId: memberId });
+    res.json({ memberId: Number(member[0].member_id) });
   } catch (err) {
     console.error("Failed to log in member:", err);
     res.status(500).json({ error: err.message || String(err) });

@@ -22,7 +22,7 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, user
     const description = document.getElementById("description").value;
 
     try {
-      const res = await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
+      const res = await fetch(`${api_base}/api/tasks/patch/${Number(task.task_id)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_name: task_name, due_date: new Date(due_date), description: description }),
@@ -87,7 +87,7 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, user
                         }
                         await updateTask();
                         const refreshedTasks = userLogin ? 
-                          await fetch(`${api_base}/api/tasks/${memberId}`).then(res => res.json()) : 
+                          await fetch(`${api_base}/api/tasks/${Number(memberId)}`).then(res => res.json()) : 
                           await fetch(`${api_base}/api/tasks`).then(res => res.json());
                         setTasks(refreshedTasks);
                         setPanel(1); 

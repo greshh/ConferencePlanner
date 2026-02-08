@@ -29,7 +29,7 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberI
       const res = await fetch(`${api_base}/api/assignments/patch`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: taskId, member_id: memberId }),
+        body: JSON.stringify({ task_id: Number(taskId), member_id: Number(memberId) }),
       });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
@@ -83,10 +83,10 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberI
                       }
                       const newTask = await createTask();
                       if (memberId) await assignMember(newTask.task_id, memberId);
-                      const refreshedTask = await fetch(`${api_base}/api/tasks/get/${newTask.insertId}`).then(res => res.json());
+                      const refreshedTask = await fetch(`${api_base}/api/tasks/get/${Number(newTask.task_id)}`).then(res => res.json());
                       selectTaskId(refreshedTask.task_id);
                       const refreshedTasks = userLogin ? 
-                        await fetch(`${api_base}/api/tasks/${memberId}`).then(res => res.json()) : 
+                        await fetch(`${api_base}/api/tasks/${Number(memberId)}`).then(res => res.json()) : 
                         await fetch(`${api_base}/api/tasks`).then(res => res.json());
                       setTasks(refreshedTasks);
                       setPanel(1); 

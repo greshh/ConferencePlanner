@@ -22,7 +22,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
     const newNote = document.getElementById("notes").value;
 
     try {
-      const res = await fetch(`${api_base}/api/assignments/notes/patch/${notes.assignment_id}`, {
+      const res = await fetch(`${api_base}/api/assignments/notes/patch/${Number(notes.assignment_id)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personal_notes: newNote }),
@@ -42,7 +42,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
     }
     const getUser = async () => {
       try {
-        const res = await fetch(`${api_base}/api/members/${memberId}`);
+        const res = await fetch(`${api_base}/api/members/${Number(memberId)}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUser(data);
@@ -52,7 +52,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
       }
     }
     const fetchNotes = async () => {
-      const res = await fetch(`${api_base}/api/assignments/notes/get/${task.task_id}&${memberId}`);
+      const res = await fetch(`${api_base}/api/assignments/notes/get/${Number(task.task_id)}&${Number(memberId)}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const notes = Array.isArray(data) ? data[0] : [];
@@ -229,7 +229,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Yes, I'm sure",
                   onClick: async () => {
-                    const res = await fetch(`${api_base}/api/tasks/delete/${task.task_id}`, {
+                    const res = await fetch(`${api_base}/api/tasks/delete/${Number(task.task_id)}`, {
                       method: "DELETE",
                     });
                     if (!res.ok) {
@@ -292,7 +292,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
                         task.attachments.push(newLink);
   
-                        await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
+                        await fetch(`${api_base}/api/tasks/patch/${Number(task.task_id)}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
@@ -355,7 +355,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
 
                         task.attachments.push(newFile);
 
-                        await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
+                        await fetch(`${api_base}/api/tasks/patch/${Number(task.task_id)}`, {
                           method: "PATCH",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ attachments: task.attachments })
@@ -384,7 +384,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Yes, I'm sure",
                   onClick: async () => {
-                    const res = await fetch(`${api_base}/api/tasks/attachments/delete/${task.task_id}&${currentAttachment}`, {
+                    const res = await fetch(`${api_base}/api/tasks/attachments/delete/${Number(task.task_id)}&${currentAttachment}`, {
                       method: "DELETE",
                     });
                     if (!res.ok) {
