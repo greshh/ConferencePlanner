@@ -82,7 +82,7 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberI
                         return;
                       }
                       const newTask = await createTask();
-                      if (memberId) await assignMember(newTask.insertId, memberId);
+                      if (memberId) await assignMember(newTask.task_id, memberId);
                       const refreshedTask = await fetch(`${api_base}/api/tasks/get/${newTask.insertId}`).then(res => res.json());
                       selectTaskId(refreshedTask.task_id);
                       const refreshedTasks = userLogin ? 

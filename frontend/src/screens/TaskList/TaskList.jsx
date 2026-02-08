@@ -29,7 +29,18 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
       const res = userLogin ? await fetch(`${api_base}/api/tasks/${memberId || cookies['memberId']}`) : await fetch(`${api_base}/api/tasks`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setTasks(Array.isArray(data) ? data : []);
+      const task_array = () => {
+        const array = [];
+        if (userLogin && Array.isArray(data)) {
+          data.map((t)=>{
+            array.push(t.task);
+          })
+        } else {
+          array = data;
+        }
+        return array;
+      };
+      setTasks(task_array);
     } catch (err) {
       console.error("Failed to load tasks:", err);
       setError(err.message || "Failed to load tasks");
@@ -45,7 +56,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
       const res = await fetch(`${api_base}/api/tasks/patch/${selectedTaskId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: newValue }),
+        body: JSON.stringify({ "completed": newValue }),
       });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
@@ -87,7 +98,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
         setScrolled(false);
       }
     });
-  }, []);
+  }, [tasks]);
 
   return (
     <div className="desktop">
@@ -137,7 +148,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
           {
             {
               0: <div/>,
-              1: tasks && selectedTaskId && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={userLogin ? memberId || cookies['memberId'] : null} userLogin={userLogin} development={development} />,
+              1: tasks && selectedTaskId && tasks.find(t => t.task_id === selectedTaskId) && <TaskDetails task={tasks.find(t => t.task_id === selectedTaskId)} selectTaskId={selectTaskId} setPanel={setPanel} fetchTasks={fetchTasks} memberId={userLogin ? memberId || cookies['memberId'] : null} userLogin={userLogin} development={development} />,
               2: tasks && <EditTask task={tasks.find(t => t.task_id === selectedTaskId)} setPanel={setPanel} setTasks={setTasks} development={development} memberId={userLogin ? memberId || cookies['memberId'] : null} userLogin={userLogin} />,
               3: <AddTask setPanel={setPanel} selectTaskId={selectTaskId} setTasks={setTasks} development={development} memberId={userLogin ? memberId || cookies['memberId'] : null} userLogin={userLogin} />
             } [rightPanel]

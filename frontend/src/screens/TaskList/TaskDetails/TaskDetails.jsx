@@ -111,8 +111,8 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     }
                   </div>
                   {assignment.committees && assignment.committees.map((c) => (
-                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.colour }}>
-                      {c.committee_name}
+                    <span className="committee" key={c.task_committee_id} style={{ backgroundColor: "#" + c.committee.colour }}>
+                      {c.committee.committee_name}
                     </span> 
                   ))}
                 </div>
@@ -187,10 +187,10 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                     assignment.members.map(m => (
                       <img
                         key={m.assignment_id}
-                        src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member_id}.jpg`}
+                        src={`https://storage.googleapis.com/conference-planner/profile-pic/member/${m.member.member_id}.jpg`}
                         className="avatar"
-                        alt={m.first_name}
-                        title={`${m.first_name} ${m.last_name}`}
+                        alt={m.member.first_name}
+                        title={`${m.member.first_name} ${m.member.last_name}`}
                         onError={(e) => { e.currentTarget.src = "https://storage.googleapis.com/conference_planner_pfp/unknown.jpg"; }}
                       />
                     )

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { loadAssigned } from "../../../hooks/loadAssigned";
-import { MemberDropdown } from "../../../components/MemberDropdown/MemberDropdown";
-import { CommitteeDropdown } from "../../../components/CommitteeDropdown/CommitteeDropdown";
 import "./style.css";
 
 export const EditTask = ({ task, setPanel, setTasks, development, memberId, userLogin}) => {
@@ -27,7 +25,7 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, user
       const res = await fetch(`${api_base}/api/tasks/patch/${task.task_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_name: task_name, due_date: due_date, description: description }),
+        body: JSON.stringify({ task_name: task_name, due_date: new Date(due_date), description: description }),
       });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);

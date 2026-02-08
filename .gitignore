@@ -10,8 +10,13 @@ build/
 .env
 *.env.local
 .env.*.local
+.env.cloud
 google-cloud-service-key.json
 firebase-credentials.json
+
+# prisma
+backend/generated/prisma
+backend/prisma/migrations/
 
 # logs & caches
 npm-debug.log*

@@ -14,7 +14,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment, development } 
     const members = [];
     for (const c of assignment.committees) {
       try {
-        const res = await fetch(`${api_base}/api/memberships/${c.committee_id}`);
+        const res = await fetch(`${api_base}/api/memberships/${c.committee.committee_id}`);
         const data = await res.json();
         members.push(data);
       } catch (err) {
@@ -32,7 +32,7 @@ export const MemberDropdown = ({ task, assignment, setAssignment, development } 
 
   // Checks if a member is currently assigned to the task
   const checkMemberChecked = (memberId) => {
-    return assignment.members.some((m) => m.member_id == memberId);
+    return assignment.members.some((m) => m.member.member_id == memberId);
   }
 
   const toggleMemberChecked = async (member) => {
@@ -80,19 +80,19 @@ export const MemberDropdown = ({ task, assignment, setAssignment, development } 
         {/* Add all committee members for the selected committees */}
         {committeeMembers.map((committee) => 
           committee.map((m) => 
-            <div className="member-selection" key={m.member_id}>
+            <div className="member-selection" key={m.member.member_id}>
               <div className="checkbox">
                 <div
-                  className={checkMemberChecked(m.member_id) ? "check-checked" : "check-unchecked"}
-                  onClick={()=>toggleMemberChecked(m)}
+                  className={checkMemberChecked(m.member.member_id) ? "check-checked" : "check-unchecked"}
+                  onClick={()=>toggleMemberChecked(m.member)}
                   role="checkbox"
-                  aria-checked={()=>checkMemberChecked(m.member_id)}
+                  aria-checked={()=>checkMemberChecked(m.member.member_id)}
                   tabIndex={0}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } }}
                   style={{ cursor: saving ? 'wait' : 'pointer' }}
                 />
               </div>
-              <p onClick={()=>toggleMemberChecked(m)}>{m.first_name} {m.last_name}</p>
+              <p onClick={()=>toggleMemberChecked(m.member)}>{m.member.first_name} {m.member.last_name}</p>
             </div>
         ))}
       </div>

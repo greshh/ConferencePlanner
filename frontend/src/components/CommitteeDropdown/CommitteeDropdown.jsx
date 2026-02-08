@@ -29,7 +29,7 @@ export const CommitteeDropdown = ({ task, assignment, setAssignment, development
 
   // Checks if a committee is currently assigned to the task
   const checkCommitteeChecked = (committeeId) => {
-    return assignment.committees.some((m) => m.committee_id == committeeId);
+    return assignment.committees.some((m) => m.committee.committee_id == committeeId);
   }
 
   const toggleCommitteeChecked = async (committee) => {
