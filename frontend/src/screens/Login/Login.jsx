@@ -42,6 +42,7 @@ export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" , justifyContent: "center", height: "100vh"}}>
+      <title>Conference Planner | Log In</title>
       <form onSubmit={(e)=>logIn(e)}>
         <div className="login-container">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>

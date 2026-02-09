@@ -106,6 +106,7 @@ export const TaskList = ({ memberId, cookies, removeCookie, development, userLog
 
   return (
     <div className="desktop">
+      <title>Conference Planner | Task List</title>
       <div className="header">
         <Header />
       </div>
