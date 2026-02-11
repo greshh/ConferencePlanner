@@ -2,16 +2,23 @@ import React, { useEffect } from "react";
 import { LoadingSmall } from "../LoadingSmall";
 import "./style.css";
 
-export const PopUp = ({ message, options, inputText, inputFile, saving, cancelOnClick }) => {
+export const PopUp = ({ message, options, inputText, inputFile, saving, cancelOnClick, submitOnClick }) => {
   
   useEffect(()=>{
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         cancelOnClick();
       }
+      if (e.key === "Enter" && submitOnClick != null) {
+        submitOnClick();
+        e.preventDefault();
+      }
     }
     window.addEventListener("keydown", handleKeyDown);
-  });
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="popup-overlay">

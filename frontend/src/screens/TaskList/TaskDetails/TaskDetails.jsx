@@ -36,6 +36,53 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
     }
   };
 
+  const addLink = async () => {
+    setSaving(true);
+    const inputLink = document.getElementById("link").value;
+    const linkName = document.getElementById("attachment-name").value;
+
+    if (!inputLink) {
+      alert("Please enter a URL");
+      return;
+    }
+    
+    try {
+      const link = await fetch(`${api_base}/api/url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: inputLink })
+      });
+      const data = await link.json();
+
+      if (data.error) {
+        alert("Invalid URL - Please try another URL");
+        return;
+      }
+
+      const newLink = {
+        type: "link",
+        link: data.resolvedUrl,
+        name: linkName
+      };
+
+      if (!task.attachments) {
+        task.attachments = [];
+      }
+
+      task.attachments.push(newLink);
+
+      await fetch(`${api_base}/api/tasks/patch/${Number(task.task_id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attachments: task.attachments })
+      });
+    } catch (err) {
+      return err.message;
+    }
+    setSaving(false);
+    setShowPopup(0); 
+  };
+
   useEffect(() => {
     const fetchAssigned = async () => {
       const data = await loadAssigned(task.task_id, development);
@@ -252,6 +299,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
               ]}
               saving={saving}
               cancelOnClick={()=>setShowPopup(0)}
+              submitOnClick={null}
             />
           </div>
         )}
@@ -262,53 +310,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
               options={[
                 {
                   label: "Add",
-                  onClick: async () => 
-                    {
-                      setSaving(true);
-                      const inputLink = document.getElementById("link").value;
-                      const linkName = document.getElementById("attachment-name").value;
-
-                      if (!inputLink) {
-                        alert("Please enter a URL");
-                        return;
-                      }
-                      
-                      try {
-                        const link = await fetch(`${api_base}/api/url`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ url: inputLink })
-                        });
-                        const data = await link.json();
-
-                        if (data.error) {
-                          alert("Invalid URL - Please try another URL");
-                          return;
-                        }
-  
-                        const newLink = {
-                          type: "link",
-                          link: data.resolvedUrl,
-                          name: linkName
-                        };
-
-                        if (!task.attachments) {
-                          task.attachments = [];
-                        }
-
-                        task.attachments.push(newLink);
-  
-                        await fetch(`${api_base}/api/tasks/patch/${Number(task.task_id)}`, {
-                          method: "PATCH",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ attachments: task.attachments })
-                        });
-                      } catch (err) {
-                        return err.message;
-                      }
-                      setSaving(false);
-                      setShowPopup(0); 
-                    }
+                  onClick: addLink
                 }, 
                 {
                   label: "Cancel",
@@ -317,6 +319,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
               ]}
               saving={saving}
               cancelOnClick={()=>{setShowPopup(0)}}
+              submitOnClick={addLink}
             />
           </div>
         )}
@@ -382,6 +385,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
               ]}
               saving={saving}
               cancelOnClick={()=>{setShowPopup(0)}}
+              submitOnClick={null}
             />
           </div>
         )}
@@ -417,6 +421,8 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 }
               ]}
               saving={saving}
+              cancelOnClick={null}
+              submitOnClick={null}
             />
           </div>
         )}
