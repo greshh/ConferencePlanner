@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import { LoadingSmall } from "../LoadingSmall";
 import "./style.css";
 
 export const TaskBubble = ({ task, onToggleComplete, isGuest }) => {
+  const [saving, setSaving] = useState(false);
+
   return (
     task != null && task.task_name != null && task.completed != null ? (
       <div className={`task-bubble`} data-testid={"task-bubble"}>
@@ -9,7 +12,11 @@ export const TaskBubble = ({ task, onToggleComplete, isGuest }) => {
           <div
             className={task.completed ? "check-checked" : "check-unchecked"}
             data-testid={"checkbox"}
-            onClick={async () => {if (!isGuest)  await onToggleComplete(task.task_id);}}
+            onClick={async () => {
+              setSaving(true);
+              if (!isGuest)  await onToggleComplete(task.task_id);
+              setSaving(false);
+            }}
             role="checkbox"
             aria-checked={task.completed}
             tabIndex={0}
@@ -21,7 +28,10 @@ export const TaskBubble = ({ task, onToggleComplete, isGuest }) => {
           className="text-wrapper"
           style={{ textDecoration: task.completed ? "line-through" : "none" }}
         >
-          {task.task_name}
+          <div>
+            {task.task_name}
+          </div>
+          {saving && <LoadingSmall style={{ marginLeft: "2rem" }} />}
         </div>
       </div>
     ) : ( <div/> )

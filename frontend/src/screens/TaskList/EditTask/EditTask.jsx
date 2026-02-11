@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { LoadingSmall } from "../../../components/LoadingSmall";
 import { loadAssigned } from "../../../hooks/loadAssigned";
 import "./style.css";
 
 export const EditTask = ({ task, setPanel, setTasks, development, memberId, userLogin}) => {
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
+  const [saving, setSaving] = useState(false);
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -70,9 +72,10 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, user
                     ></textarea>
                   </div>
                   <div/>
-                  <div style={{display: 'flex', gap: '1rem'}}>
+                  <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
                     <button type="submit" onClick={async (e) => 
                       { 
+                        setSaving(true);
                         e.preventDefault(); 
                         const errors = [];
                         if (!document.getElementById("task-name").value) {
@@ -90,9 +93,11 @@ export const EditTask = ({ task, setPanel, setTasks, development, memberId, user
                           await fetch(`${api_base}/api/tasks/${Number(memberId)}`).then(res => res.json()) : 
                           await fetch(`${api_base}/api/tasks`).then(res => res.json());
                         setTasks(refreshedTasks);
+                        setSaving(false);
                         setPanel(1); 
                       }}>Save</button>
                     <button type="button" onClick={() => { setPanel(1) }}>Discard</button>
+                    {saving && <LoadingSmall style={{ marginLeft: "0.5rem" }} />}
                   </div>
               </div>
             </form>

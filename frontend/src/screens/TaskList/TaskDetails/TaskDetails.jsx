@@ -15,6 +15,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
   const [assignment, setAssignment] = useState({ members: [], committees: [] });
   const [showPopup, setShowPopup] = useState(0); // 0 = No popup, 1 = Delete Task, 2 = Link, 3 = File, 4 = Delete Attachment
   const [currentAttachment, setCurrentAttachment] = useState(-1);
+  const [saving, setSaving] = useState(false);
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -86,14 +87,15 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
               <div style={{ marginBottom: '2rem' }}>
                 <div style={{ marginBottom: '1.5rem' }}>
                   {task.due_date && (
-                    <p className="due-date">Due Date: {(() => {
-                      const date = new Date(task.due_date);
-                      const formatted =
-                        String(date.getDate()).padStart(2, "0") + "/" +
-                        String(date.getMonth() + 1).padStart(2, "0") + "/" +
-                        date.getFullYear();
-                      return formatted;
-                    })()}
+                    <p className="due-date">Due Date: <span style={{color: new Date(task.due_date) < new Date() ? "red" : "black", fontWeight: new Date(task.due_date) < new Date() ? "bold" : "normal"}}>{(() => {
+                        const date = new Date(task.due_date);
+                        const formatted =
+                          String(date.getDate()).padStart(2, "0") + "/" +
+                          String(date.getMonth() + 1).padStart(2, "0") + "/" +
+                          date.getFullYear();
+                        return formatted;
+                      })()}
+                      </span>
                     </p>
                   )}
                   {task.description && <p>{task.description}</p>}
@@ -229,6 +231,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Yes, I'm sure",
                   onClick: async () => {
+                    setSaving(true);
                     const res = await fetch(`${api_base}/api/tasks/delete/${Number(task.task_id)}`, {
                       method: "DELETE",
                     });
@@ -238,6 +241,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       return;
                     }
                     fetchTasks();
+                    setSaving(false);
                     setPanel(0);
                   }
                 },
@@ -246,6 +250,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: () => { setShowPopup(0); }
                 }
               ]}
+              saving={saving}
               cancelOnClick={()=>setShowPopup(0)}
             />
           </div>
@@ -259,6 +264,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   label: "Add",
                   onClick: async () => 
                     {
+                      setSaving(true);
                       const inputLink = document.getElementById("link").value;
                       const linkName = document.getElementById("attachment-name").value;
 
@@ -300,7 +306,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       } catch (err) {
                         return err.message;
                       }
-
+                      setSaving(false);
                       setShowPopup(0); 
                     }
                 }, 
@@ -309,6 +315,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: () => { setShowPopup(0); }
                 }
               ]}
+              saving={saving}
               cancelOnClick={()=>{setShowPopup(0)}}
             />
           </div>
@@ -335,6 +342,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       data.append("file_name", fileName);
                       data.append("file", inputFile);
 
+                      setSaving(true);
                       try {
                         const res = await fetch(`${api_base}/api/upload-file`, {
                           method: "PATCH",
@@ -363,7 +371,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       } catch (err) {
                         return err.message;
                       }
-
+                    setSaving(false);
                     setShowPopup(0); 
                   }
                 }, 
@@ -372,6 +380,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   onClick: () => { setShowPopup(0); }
                 }
               ]}
+              saving={saving}
               cancelOnClick={()=>{setShowPopup(0)}}
             />
           </div>
@@ -384,6 +393,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                 {
                   label: "Yes, I'm sure",
                   onClick: async () => {
+                    setSaving(true);
                     const res = await fetch(`${api_base}/api/tasks/attachments/delete/${Number(task.task_id)}&${currentAttachment}`, {
                       method: "DELETE",
                     });
@@ -393,6 +403,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                       setShowPopup(0);
                       return;
                     }
+                    setSaving(false);
                     fetchTasks();
                     setShowPopup(0);
                   }
@@ -405,6 +416,7 @@ export const TaskDetails = ({ task, selectTaskId, setPanel, fetchTasks, memberId
                   }
                 }
               ]}
+              saving={saving}
             />
           </div>
         )}

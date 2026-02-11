@@ -12,6 +12,9 @@ export const Sidebar = ({ isGuest, user, removeCookie }) => {
       <div className='link'>
         <Link to="/tasks" data-testid="task-list-link"><p>Task List</p></Link>
       </div>
+      <div className='link'>
+        <a href="https://forms.gle/MRo12D7DQBanGgD39"><p>Feedback</p></a>
+      </div>
       {!isGuest && user != null ? (
         <div className="user">
           <img

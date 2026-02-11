@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { LoadingSmall } from "../../components/LoadingSmall";
 import "./style.css";
 
 export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const api_base = development ? "http://localhost:4000" : "";
 
@@ -14,6 +16,7 @@ export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
 
   async function logIn(event) {
     event.preventDefault();
+    setSaving(true);
     try {
       await signInWithEmailAndPassword(getAuth(), email, password).then(async (userCredential) => {
         setMessage("Success! Logging in.");
@@ -38,6 +41,7 @@ export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
     } catch (err) {
       setMessage("Login failed. Please check your email and password.");
     }
+    setSaving(false);
   }
 
   return (
@@ -68,7 +72,10 @@ export const Login = ({ setUser, setCookie, development, setIsGuest }) => {
               />
             </div>
           </div>
-          <button type="submit">Log In</button>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <button type="submit">Log In</button>
+            {saving && <LoadingSmall />}
+          </div>
           <Link 
             onClick={()=>setIsGuest(true)} 
             to={"/tasks"}

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { LoadingSmall } from "../../../components/LoadingSmall";
 import "./style.css";
 
 export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberId, userLogin }) => {
+  const [saving, setSaving] = useState(false);
+
   const api_base = development ? "http://localhost:4000" : "";
 
   const createTask = async () => {
@@ -66,32 +69,34 @@ export const AddTask = ({ setPanel, selectTaskId, setTasks, development, memberI
                     style={{ minWidth: "99%", height: "5rem", marginTop: '1rem', whiteSpace: "pre-wrap" }}
                   ></textarea>
                 </div>
-                <div style={{ display: 'flex', marginTop: '1rem', gap: '1rem' }}>
-                <button type="submit" onClick={async (e) => 
-                    { 
-                      e.preventDefault(); 
-                      const errors = [];
-                      if (!document.getElementById("task-name").value) {
-                        errors.push("• Task name is required");
-                      }
-                      if (new Date(document.getElementById("due-date").value) == "Invalid Date") {
-                        errors.push("• Due date is invalid");
-                      }
-                      if (errors.length > 0) {
-                        alert("Please see the following errors:\n" + errors.join("\n"));
-                        return;
-                      }
-                      const newTask = await createTask();
-                      if (memberId) await assignMember(newTask.task_id, memberId);
-                      const refreshedTask = await fetch(`${api_base}/api/tasks/get/${Number(newTask.task_id)}`).then(res => res.json());
-                      selectTaskId(refreshedTask.task_id);
-                      const refreshedTasks = userLogin ? 
-                        await fetch(`${api_base}/api/tasks/${Number(memberId)}`).then(res => res.json()) : 
-                        await fetch(`${api_base}/api/tasks`).then(res => res.json());
-                      setTasks(refreshedTasks);
-                      setPanel(1); 
-                    }}>Save</button>
+                <div style={{ display: 'flex', marginTop: '1rem', alignItems: 'center', gap: '1rem' }}>
+                  <button type="submit" onClick={async (e) => {
+                    e.preventDefault(); 
+                    const errors = [];
+                    if (!document.getElementById("task-name").value) {
+                      errors.push("• Task name is required");
+                    }
+                    if (new Date(document.getElementById("due-date").value) == "Invalid Date") {
+                      errors.push("• Due date is invalid");
+                    }
+                    if (errors.length > 0) {
+                      alert("Please see the following errors:\n" + errors.join("\n"));
+                      return;
+                    }
+                    setSaving(true); 
+                    const newTask = await createTask();
+                    if (memberId) await assignMember(newTask.task_id, memberId);
+                    const refreshedTask = await fetch(`${api_base}/api/tasks/get/${Number(newTask.task_id)}`).then(res => res.json());
+                    selectTaskId(refreshedTask.task_id);
+                    const refreshedTasks = userLogin ? 
+                      await fetch(`${api_base}/api/tasks/${Number(memberId)}`).then(res => res.json()) : 
+                      await fetch(`${api_base}/api/tasks`).then(res => res.json());
+                    setTasks(refreshedTasks);
+                    setSaving(false);
+                    setPanel(1); 
+                  }}>Save</button>
                   <button type="button" onClick={() => { setPanel(0) }}>Discard</button>
+                  {saving && <LoadingSmall style={{ marginLeft: "0.5rem" }} />}
                 </div>
                 <p style={{ fontStyle: 'italic'}}>Don't worry, you can assign members and committees later!</p>
             </div>

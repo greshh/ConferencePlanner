@@ -47,6 +47,7 @@
         letter-spacing: 0;
         width: 292px;
         text-overflow: ellipsis;
+        gap: 0.5rem;
 }
 
 .task-bubble:hover {

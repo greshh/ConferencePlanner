@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
+import { LoadingSmall } from "../LoadingSmall";
 import "./style.css";
 
-export const PopUp = ({ message, options, inputText, inputFile, cancelOnClick }) => {
+export const PopUp = ({ message, options, inputText, inputFile, saving, cancelOnClick }) => {
   
   useEffect(()=>{
     const handleKeyDown = (e) => {
@@ -39,12 +40,13 @@ export const PopUp = ({ message, options, inputText, inputFile, cancelOnClick })
             </div>
           ) : ( <div/> )}
         </form>
-        <div className="popup-buttons" style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+        <div className="popup-buttons" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
           {options?.map((option, index) => (
             <button key={index} onClick={option.onClick}>
               {option.label}
             </button>
           ))}
+          {saving && <LoadingSmall style={{ marginLeft: "0.5rem" }} />}
         </div>
       </div>
     </div>
