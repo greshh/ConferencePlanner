@@ -13,7 +13,10 @@ export const Sidebar = ({ isGuest, user, removeCookie }) => {
         <Link to="/tasks" data-testid="task-list-link"><p>Task List</p></Link>
       </div>
       <div className='link'>
-        <a href="https://forms.gle/MRo12D7DQBanGgD39"><p>Feedback</p></a>
+        <a href="https://docs.google.com/document/d/1v2e3fIhM6KM30S5cfCp1gpxPsXA5bGL4RyVZB91J5YQ/edit?usp=sharing" target="_blank"><p>Help (Manual)</p></a>
+      </div>
+      <div className='link'>
+        <a href="https://forms.gle/MRo12D7DQBanGgD39" target="_blank"><p>Feedback</p></a>
       </div>
       {!isGuest && user != null ? (
         <div className="user">
